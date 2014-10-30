@@ -1,16 +1,7 @@
 ﻿#region Using Statements
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-
-using CSharp_Steering_Behavior.Primitives;
-
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Storage;
-using Microsoft.Xna.Framework.GamerServices;
 #endregion
 
 namespace CSharp_Steering_Behavior
@@ -22,10 +13,9 @@ namespace CSharp_Steering_Behavior
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private Triangle triangle;
+        private GameManager gameManager;
 
-        public Game1()
-            : base()
+        public Game1() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -40,7 +30,7 @@ namespace CSharp_Steering_Behavior
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            triangle = new Triangle(this.GraphicsDevice);
+            gameManager = new GameManager(graphics, GraphicsDevice);
             base.Initialize();
         }
 
@@ -65,6 +55,8 @@ namespace CSharp_Steering_Behavior
             // TODO: Unload any non ContentManager content here
         }
 
+
+        private float rotate = 0;
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -75,7 +67,7 @@ namespace CSharp_Steering_Behavior
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            gameManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -88,7 +80,7 @@ namespace CSharp_Steering_Behavior
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            triangle.Draw();
+            gameManager.Draw(gameTime);
 
             base.Draw(gameTime);
         }
