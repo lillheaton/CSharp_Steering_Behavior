@@ -40,22 +40,23 @@ namespace CSharp_Steering_Behavior
 
             if (keyState.IsKeyDown(Keys.Left) || gamePad.ThumbSticks.Left.X < -epsilon)
             {
-                _playerTriangle.Rotate(_playerTriangle.CurrentRadians + 1);
+                _playerTriangle.Rotate(_playerTriangle.CurrentAngle + 2);
             }
 
             if (keyState.IsKeyDown(Keys.Right) || gamePad.ThumbSticks.Left.X > epsilon)
             {
-                _playerTriangle.Rotate(_playerTriangle.CurrentRadians - 1);
+                _playerTriangle.Rotate(_playerTriangle.CurrentAngle - 2);
+                //_playerTriangle.Move(Direction.East);
             }
 
             if (keyState.IsKeyDown(Keys.Down) || gamePad.ThumbSticks.Left.Y < -epsilon)
             {
-                // Move it backwards
+                //_playerTriangle.Move(Direction.South);
             }
 
             if (keyState.IsKeyDown(Keys.Up) || gamePad.ThumbSticks.Left.Y > epsilon)
             {
-                _playerTriangle.MoveForward();
+                _playerTriangle.Move();
             }
         }
 

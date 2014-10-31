@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CSharp_Steering_Behavior.Primitives
@@ -8,7 +10,7 @@ namespace CSharp_Steering_Behavior.Primitives
         private GraphicsDevice Graphics { get; set; }
         private VertexBuffer VertexBuffer { get; set; }
         private Matrix World { get; set; }
-        public float CurrentRadians { get; set; }
+        public float CurrentAngle { get; set; }
 
         private float _centerX;
         private float _centerY;
@@ -31,26 +33,26 @@ namespace CSharp_Steering_Behavior.Primitives
             VertexBuffer = new VertexBuffer(graphics, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
             VertexBuffer.SetData<VertexPositionColor>(vertices);
 
-            this.CurrentRadians = 0;
+            this.CurrentAngle = 0;
         }
 
-        public void Rotate(float radians)
+        public void Rotate(float degrees)
         {
-            CurrentRadians = radians;
-            World = Matrix.CreateTranslation(_position) * Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(CurrentRadians));
+            this.CurrentAngle = degrees;
         }
 
-        public void MoveForward()
-        {            
-            _position = _position + new Vector3(0, 0.01f, 0);
-            World = Matrix.CreateTranslation(_position) * Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(CurrentRadians));
+        public void Move()
+        {
+            var radians = MathHelper.ToRadians(CurrentAngle + 90);
+            var target = new Vector3((float)Math.Cos(radians), (float)Math.Sin(radians), 0);
+            _position = _position + target * 0.03f;
         }
 
         public void Draw(BasicEffect basicEffect)
         {
             Graphics.SetVertexBuffer(VertexBuffer);
-            basicEffect.World = World;
-
+            basicEffect.World = Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(this.CurrentAngle)) * Matrix.CreateTranslation(_position);
+            
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
