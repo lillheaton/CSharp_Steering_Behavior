@@ -79,8 +79,8 @@ namespace CSharp_Steering_Behavior
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            gameManager.Draw(gameTime);
+            
+            gameManager.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }

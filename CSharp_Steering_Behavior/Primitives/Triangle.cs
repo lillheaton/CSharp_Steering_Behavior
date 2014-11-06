@@ -1,7 +1,6 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace CSharp_Steering_Behavior.Primitives
 {
@@ -9,22 +8,24 @@ namespace CSharp_Steering_Behavior.Primitives
     {
         private GraphicsDevice Graphics { get; set; }
         private VertexBuffer VertexBuffer { get; set; }
-        private Matrix World { get; set; }
-        public float CurrentAngle { get; set; }
+        private Matrix LocalWorld { get; set; }
 
-        private float _centerX;
-        private float _centerY;
-        private Vector3 _position;
+        public Vector3 Position { get; set; }
+
+        private double _radians;
 
         public Triangle(GraphicsDevice graphics, Vector3 top, Vector3 right, Vector3 left)
         {
             this.Graphics = graphics;
 
-            _centerX = -((top.X + right.X + left.X) / 3);
-            _centerY = -((top.Y + right.Y + left.Y) / 3);
-            _position = new Vector3(_centerX, _centerY, 0);
+            float centerX = -((top.X + right.X + left.X) / 3);
+            float centerY = -((top.Y + right.Y + left.Y) / 3);
+            var centerPosition = new Vector3(centerX, centerY, 0);
+            this.LocalWorld = Matrix.CreateTranslation(centerPosition);
 
-            World = Matrix.CreateTranslation(_position);
+            // Set start position to centerPosition
+            Position = -centerPosition;
+
             var vertices = new VertexPositionColor[3];
             vertices[0] = new VertexPositionColor(top, Color.Red);
             vertices[1] = new VertexPositionColor(right, Color.Red);
@@ -33,33 +34,40 @@ namespace CSharp_Steering_Behavior.Primitives
             VertexBuffer = new VertexBuffer(graphics, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
             VertexBuffer.SetData<VertexPositionColor>(vertices);
 
-            this.CurrentAngle = 0;
+            this._radians = 0;
         }
 
-        public void Rotate(float degrees)
-        {
-            this.CurrentAngle = degrees;
-        }
+        //public void Rotate(float degrees)
+        //{
+        //    this.CurrentAngle = degrees;
+        //}
 
-        public void Move()
+        //public void Move()
+        //{
+        //    var radians = MathHelper.ToRadians(CurrentAngle + 90);
+        //    var target = new Vector3((float)Math.Cos(radians), (float)Math.Sin(radians), 0);
+        //    //_position = _position + target * 0.03f;
+        //}
+
+        public void MoveTwoardsTarget(Vector3 target)
         {
-            var radians = MathHelper.ToRadians(CurrentAngle + 90);
-            var target = new Vector3((float)Math.Cos(radians), (float)Math.Sin(radians), 0);
-            _position = _position + target * 0.03f;
+            _radians = Math.Atan2(Position.Y - target.Y, Position.X - target.X);
+            Position = SteeringBehavior.Seek(Position, target);
         }
 
         public void Draw(BasicEffect basicEffect)
         {
             Graphics.SetVertexBuffer(VertexBuffer);
-            basicEffect.World = Matrix.CreateFromAxisAngle(Vector3.UnitZ, MathHelper.ToRadians(this.CurrentAngle)) * Matrix.CreateTranslation(_position);
-            
+
+            basicEffect.World = LocalWorld * Matrix.CreateRotationZ((float)(_radians * (Math.PI * 0.5))) * Matrix.CreateTranslation(Position);
+
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 Graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
             }
 
-            basicEffect.World = Matrix.Identity;
+            basicEffect.World = -basicEffect.World;
         }
     }
 }
