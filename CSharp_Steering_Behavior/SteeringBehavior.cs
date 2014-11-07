@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace CSharp_Steering_Behavior
 {
@@ -11,9 +7,10 @@ namespace CSharp_Steering_Behavior
     {
         private static int MaxVelocity = 5;
 
-        public static Vector3 Seek(Vector3 position, Vector3 target)
+        public static Vector3 Seek(Vector3 position, Vector3 target, out double angle)
         {
             var velocity = Vector3.Normalize(target - position) * MaxVelocity;
+            angle = -Math.Atan2(velocity.X, velocity.Y) + Math.PI;
             return position + velocity;
         }
     }

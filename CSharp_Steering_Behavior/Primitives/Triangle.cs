@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace CSharp_Steering_Behavior.Primitives
 {
@@ -37,6 +36,11 @@ namespace CSharp_Steering_Behavior.Primitives
             this._radians = 0;
         }
 
+        public Triangle(GraphicsDevice graphics, Vector3 position)
+        {
+            
+        }
+
         //public void Rotate(float degrees)
         //{
         //    this.CurrentAngle = degrees;
@@ -51,15 +55,14 @@ namespace CSharp_Steering_Behavior.Primitives
 
         public void MoveTwoardsTarget(Vector3 target)
         {
-            _radians = Math.Atan2(Position.Y - target.Y, Position.X - target.X);
-            Position = SteeringBehavior.Seek(Position, target);
+            Position = SteeringBehavior.Seek(Position, target, out _radians);
         }
 
         public void Draw(BasicEffect basicEffect)
         {
             Graphics.SetVertexBuffer(VertexBuffer);
 
-            basicEffect.World = LocalWorld * Matrix.CreateRotationZ((float)(_radians * (Math.PI * 0.5))) * Matrix.CreateTranslation(Position);
+            basicEffect.World = LocalWorld * Matrix.CreateRotationZ((float)_radians) * Matrix.CreateTranslation(Position);
 
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
@@ -67,7 +70,7 @@ namespace CSharp_Steering_Behavior.Primitives
                 Graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
             }
 
-            basicEffect.World = -basicEffect.World;
+            //basicEffect.World = -basicEffect.World;
         }
     }
 }

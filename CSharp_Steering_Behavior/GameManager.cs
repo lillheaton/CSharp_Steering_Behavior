@@ -26,10 +26,15 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
+            //_playerTriangle = _primitivesManager.AddTriangle(
+            //    new Vector3(100, 80, 0),
+            //    new Vector3(110, 120, 0),
+            //    new Vector3(90, 120, 0));
+
             _playerTriangle = _primitivesManager.AddTriangle(
-                new Vector3(100, 80, 0),
-                new Vector3(110, 120, 0),
-                new Vector3(90, 120, 0));
+                new Vector3(0, 0, 0),
+                new Vector3(12, 40, 0),
+                new Vector3(-12, 40, 0));
         }
 
         public void UpdateKeyboardInput()
