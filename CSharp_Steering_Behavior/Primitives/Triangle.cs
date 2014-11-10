@@ -5,72 +5,69 @@ namespace CSharp_Steering_Behavior.Primitives
 {
     public class Triangle
     {
-        private GraphicsDevice Graphics { get; set; }
-        private VertexBuffer VertexBuffer { get; set; }
-        private Matrix LocalWorld { get; set; }
-
         public Vector3 Position { get; set; }
 
-        private double _radians;
+        private SteeringBehavior _steering;
+        private Vector3[] _lines;
+        private VertexPositionColor[] _vertices;
+        private Matrix _centerMatrix;
 
-        public Triangle(GraphicsDevice graphics, Vector3 top, Vector3 right, Vector3 left)
+        public Triangle(Vector3 top, Vector3 right, Vector3 left)
         {
-            this.Graphics = graphics;
+            this.Init(top, right, left);
+        }
 
+        public Triangle(Vector3 position)
+        {
+            this.Init(
+                new Vector3(0, 0, 0), 
+                new Vector3(12, 40, 0), 
+                new Vector3(-12, 40, 0)
+            );
+
+            Position = position;
+        }
+
+        private void Init(Vector3 top, Vector3 right, Vector3 left)
+        {
             float centerX = -((top.X + right.X + left.X) / 3);
             float centerY = -((top.Y + right.Y + left.Y) / 3);
             var centerPosition = new Vector3(centerX, centerY, 0);
-            this.LocalWorld = Matrix.CreateTranslation(centerPosition);
+            this._centerMatrix = Matrix.CreateTranslation(centerPosition);
 
             // Set start position to centerPosition
             Position = -centerPosition;
 
-            var vertices = new VertexPositionColor[3];
-            vertices[0] = new VertexPositionColor(top, Color.Red);
-            vertices[1] = new VertexPositionColor(right, Color.Red);
-            vertices[2] = new VertexPositionColor(left, Color.Red);
+            this._lines = new Vector3[3];
+            this._lines[0] = top;
+            this._lines[1] = right;
+            this._lines[2] = left;
 
-            VertexBuffer = new VertexBuffer(graphics, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
-            VertexBuffer.SetData<VertexPositionColor>(vertices);
+            _vertices = new VertexPositionColor[3];
+            _vertices[0] = new VertexPositionColor(top, Color.Red);
+            _vertices[1] = new VertexPositionColor(right, Color.Red);
+            _vertices[2] = new VertexPositionColor(left, Color.Red);
 
-            this._radians = 0;
+            _steering = new SteeringBehavior();
         }
-
-        public Triangle(GraphicsDevice graphics, Vector3 position)
-        {
-            
-        }
-
-        //public void Rotate(float degrees)
-        //{
-        //    this.CurrentAngle = degrees;
-        //}
-
-        //public void Move()
-        //{
-        //    var radians = MathHelper.ToRadians(CurrentAngle + 90);
-        //    var target = new Vector3((float)Math.Cos(radians), (float)Math.Sin(radians), 0);
-        //    //_position = _position + target * 0.03f;
-        //}
 
         public void MoveTwoardsTarget(Vector3 target)
         {
-            Position = SteeringBehavior.Seek(Position, target, out _radians);
-        }
+            Position = _steering.Seek(Position, target);
+        }       
 
-        public void Draw(BasicEffect basicEffect)
+        public void Draw(PrimitiveBatch primitiveBatch)
         {
-            Graphics.SetVertexBuffer(VertexBuffer);
+            var world = this._centerMatrix * Matrix.CreateRotationZ(_steering.Angle) * Matrix.CreateTranslation(Position);
 
-            basicEffect.World = LocalWorld * Matrix.CreateRotationZ((float)_radians) * Matrix.CreateTranslation(Position);
+            var temp = new Vector3[3];
+            Vector3.Transform(this._lines, ref world, temp);
 
-            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                Graphics.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
-            }
+            _vertices[0].Position = temp[0];
+            _vertices[1].Position = temp[1];
+            _vertices[2].Position = temp[2];
 
-            //basicEffect.World = -basicEffect.World;
+            primitiveBatch.AddVertices(_vertices);
         }
     }
 }

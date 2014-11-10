@@ -13,6 +13,7 @@ namespace CSharp_Steering_Behavior
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
+        private PrimitiveBatch primitiveBatch;
         private GameManager gameManager;
 
         public Game1() : base()
@@ -42,6 +43,7 @@ namespace CSharp_Steering_Behavior
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            primitiveBatch = new PrimitiveBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -79,8 +81,8 @@ namespace CSharp_Steering_Behavior
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            
-            gameManager.Draw(spriteBatch);
+
+            gameManager.Draw(spriteBatch, primitiveBatch);
 
             base.Draw(gameTime);
         }

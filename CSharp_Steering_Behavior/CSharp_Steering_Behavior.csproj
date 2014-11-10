@@ -38,7 +38,7 @@
     <Compile Include="Direction.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameManager.cs" />
-    <Compile Include="Primitives\PrimitivesManager.cs" />
+    <Compile Include="PrimitiveBatch.cs" />
     <Compile Include="Primitives\Triangle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

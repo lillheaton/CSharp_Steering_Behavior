@@ -11,30 +11,19 @@ namespace CSharp_Steering_Behavior
     {
         private GraphicsDevice _graphics;
         private GraphicsDeviceManager _graphicsDevice;
-        private PrimitivesManager _primitivesManager;
-
         private Triangle _playerTriangle;
 
         public GameManager(GraphicsDeviceManager graphicsDevice, GraphicsDevice graphics)
         {
             _graphicsDevice = graphicsDevice;
             this._graphics = graphics;
-            this._primitivesManager = new PrimitivesManager(this._graphics);
 
             this.Initialize();
         }
 
         public void Initialize()
         {
-            //_playerTriangle = _primitivesManager.AddTriangle(
-            //    new Vector3(100, 80, 0),
-            //    new Vector3(110, 120, 0),
-            //    new Vector3(90, 120, 0));
-
-            _playerTriangle = _primitivesManager.AddTriangle(
-                new Vector3(0, 0, 0),
-                new Vector3(12, 40, 0),
-                new Vector3(-12, 40, 0));
+            _playerTriangle = new Triangle(new Vector3(10, 10, 0));
         }
 
         public void UpdateKeyboardInput()
@@ -106,9 +95,13 @@ namespace CSharp_Steering_Behavior
             UpdateMouseInput();
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, PrimitiveBatch primitiveBatch)
         {
-            this._primitivesManager.Draw(spriteBatch);
+            primitiveBatch.Begin(PrimitiveType.TriangleList);
+
+            _playerTriangle.Draw(primitiveBatch);
+
+            primitiveBatch.End();
         }
     }
 }
