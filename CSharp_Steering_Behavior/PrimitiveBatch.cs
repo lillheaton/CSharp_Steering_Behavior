@@ -46,6 +46,11 @@ namespace CSharp_Steering_Behavior
                 throw new Exception("You should not call the begin method twice");
             }
 
+            if (primitiveType != PrimitiveType.LineList && primitiveType != PrimitiveType.TriangleList)
+            {
+                throw new Exception("Not supported primitiveType");
+            }
+
             _primitiveType = primitiveType;
 
             //tell our basic effect to begin.
@@ -65,7 +70,7 @@ namespace CSharp_Steering_Behavior
 
             if (primitivesCount > 0)
             {
-                _graphics.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, _vertices, 0, primitivesCount);    
+                _graphics.DrawUserPrimitives<VertexPositionColor>(_primitiveType, _vertices, 0, primitivesCount);    
             }
 
             _positionInBuffer = 0;
@@ -97,6 +102,9 @@ namespace CSharp_Steering_Behavior
             {
                 case PrimitiveType.TriangleList:
                     return 3;
+
+                case PrimitiveType.LineList:
+                    return 2;
             }
 
             return 0;

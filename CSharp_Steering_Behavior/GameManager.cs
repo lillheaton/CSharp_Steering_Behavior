@@ -57,50 +57,27 @@ namespace CSharp_Steering_Behavior
         public void UpdateMouseInput()
         {
             var mouse = Mouse.GetState();
-
-            //var ray = this.CalculateRay(
-            //    new Vector2(mouse.X, mouse.Y),
-            //    _primitivesManager.BasicEffect.View,
-            //    _primitivesManager.BasicEffect.Projection,
-            //    _graphics.Viewport);
-
-            ////ray.
             _playerTriangle.MoveTwoardsTarget(new Vector3(mouse.X, mouse.Y, 0));
-            //Console.WriteLine(new Vector2(mouse.X, mouse.Y));
-        }
-
-        public Ray CalculateRay(Vector2 point, Matrix view, Matrix projection, Viewport viewport)
-        {
-            Vector3 nearPoint = viewport.Unproject(
-                new Vector3(point.X, point.Y, 0.0f),
-                projection,
-                view,
-                Matrix.Identity);
-
-            Vector3 farPoint = viewport.Unproject(
-                new Vector3(point.X, point.Y, 1.0f),
-                projection,
-                view,
-                Matrix.Identity);
-
-            Vector3 direction = farPoint - nearPoint;
-            direction.Normalize();
-
-            return new Ray(nearPoint, direction);
         }
 
         public void Update(GameTime gameTime)
         {
             UpdateKeyboardInput();
             UpdateMouseInput();
+
+            _playerTriangle.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch, PrimitiveBatch primitiveBatch)
         {
+            // Draw Triangles
             primitiveBatch.Begin(PrimitiveType.TriangleList);
-
             _playerTriangle.Draw(primitiveBatch);
+            primitiveBatch.End();
 
+            // Draw lines
+            primitiveBatch.Begin(PrimitiveType.LineList);
+            _playerTriangle.DrawForces(primitiveBatch);
             primitiveBatch.End();
         }
     }
