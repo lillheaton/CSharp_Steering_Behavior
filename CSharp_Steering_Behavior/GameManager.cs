@@ -23,7 +23,7 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
-            _playerTriangle = new Triangle(new Vector3(10, 10, 0));
+            _playerTriangle = new Triangle(new Vector3(300, 200, 0));
         }
 
         public void UpdateKeyboardInput()

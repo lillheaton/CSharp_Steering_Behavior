@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
+
 namespace CSharp_Steering_Behavior
 {
     public class Direction

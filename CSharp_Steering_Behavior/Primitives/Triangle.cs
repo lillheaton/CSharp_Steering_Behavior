@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CSharp_Steering_Behavior.Primitives
@@ -61,7 +63,9 @@ namespace CSharp_Steering_Behavior.Primitives
 
         public void Update(GameTime gameTime)
         {
-            Position = _steering.Seek(Position, _target);
+            Position = _steering.Flee(Position, _target);
+            
+            Console.WriteLine(Position);
 
             var world = this._centerMatrix * Matrix.CreateRotationZ(_steering.Angle) * Matrix.CreateTranslation(Position);
             Vector3.Transform(this._localLines, ref world, _transformedLines);
@@ -74,7 +78,7 @@ namespace CSharp_Steering_Behavior.Primitives
             _vertices[2].Position = _transformedLines[2];
 
             // Draw triangle
-            primitiveBatch.AddVertices(_vertices);            
+            primitiveBatch.AddVertices(_vertices);
         }
 
         public void DrawForces(PrimitiveBatch primitiveBatch)
