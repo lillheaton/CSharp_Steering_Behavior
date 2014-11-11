@@ -63,7 +63,7 @@ namespace CSharp_Steering_Behavior.Primitives
 
         public void Update(GameTime gameTime)
         {
-            Position = _steering.Flee(Position, _target);
+            Position = _steering.Seek(Position, _target);
             
             Console.WriteLine(Position);
 

@@ -1,5 +1,4 @@
 ﻿using CSharp_Steering_Behavior.Extensions;
-
 using Microsoft.Xna.Framework;
 using System;
 
@@ -13,7 +12,8 @@ namespace CSharp_Steering_Behavior
         public Vector3 Steering { get; private set; }
 
         private const int MaxVelocity = 3;
-        private const float MaxForce = 2.4f;
+        private const float MaxForce = 0.6f;
+        private const int SlowingRadius = 100;
 
         // This number should be recived
         private const int Mass = 20;
@@ -27,9 +27,22 @@ namespace CSharp_Steering_Behavior
 
         public Vector3 Seek(Vector3 position, Vector3 target)
         {
-            DesiredVelocity = Vector3.Normalize(target - position) * MaxVelocity;
-            Steering = DesiredVelocity - Velocity;
+            DesiredVelocity = target - position;
 
+            float distance = DesiredVelocity.Length();
+
+            // Inside slowing radius
+            if (distance <= SlowingRadius)
+            {
+                DesiredVelocity = Vector3.Normalize(DesiredVelocity) * MaxVelocity * (distance / SlowingRadius);
+            }
+            else
+            {
+                // Far away
+                DesiredVelocity = Vector3.Normalize(DesiredVelocity) * MaxVelocity;
+            }
+
+            Steering = DesiredVelocity - Velocity;
             return this.AddingForces(position);
         }
 
