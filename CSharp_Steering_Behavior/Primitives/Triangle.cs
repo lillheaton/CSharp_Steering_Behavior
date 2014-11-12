@@ -63,7 +63,9 @@ namespace CSharp_Steering_Behavior.Primitives
 
         public void Update(GameTime gameTime)
         {
-            Position = _steering.Seek(Position, _target);
+            //Position = _steering.Seek(Position, _target);
+
+            Position = _steering.Wander(Position);
             
             Console.WriteLine(Position);
 
@@ -85,10 +87,18 @@ namespace CSharp_Steering_Behavior.Primitives
         {
             const int Scale = 100;
             var velocityForce = Vector3.Normalize(_steering.Velocity);
+            var steeringForce = Vector3.Normalize(_steering.Steering);
+            var desiredVelocityForce = Vector3.Normalize(_steering.DesiredVelocity);
 
-            var forces = new VertexPositionColor[2];
+            var forces = new VertexPositionColor[6];
             forces[0] = new VertexPositionColor(Position, Color.Green);
             forces[1] = new VertexPositionColor(Position + velocityForce * Scale, Color.Green);
+
+            forces[2] = new VertexPositionColor(Position, Color.Gray);
+            forces[3] = new VertexPositionColor(Position + desiredVelocityForce * Scale, Color.Green);
+
+            forces[4] = new VertexPositionColor(Position, Color.Red);
+            forces[5] = new VertexPositionColor(Position + steeringForce * Scale, Color.Green);
 
             // Draw forces
             primitiveBatch.AddVertices(forces);

@@ -79,10 +79,10 @@ namespace CSharp_Steering_Behavior
 
         public void AddVertices(VertexPositionColor[] vertices)
         {
-            if (vertices.Count() != this.NumVertsPerPrimitive())
-            {
-                throw new Exception("Wrong number of vertices for the primitiveType");
-            }
+            //if (vertices.Count() != this.NumVertsPerPrimitive())
+            //{
+            //    throw new Exception("Wrong number of vertices for the primitiveType");
+            //}
 
             AddVerticesToBuffer(vertices);
         }

@@ -1,20 +1,24 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace CSharp_Steering_Behavior.Extensions
 {
     public static class VectorExtensions
     {
-        public static void Truncate(this Vector3 vector, float max)
+        public static Vector3 Truncate(this Vector3 vector, float max)
         {
             var i = max / vector.Length();
-            i = i < 1.0f ? 1.0f : i;
-            vector *= i;
+            i = i < 1.0f ? i : 1.0f;
+            return vector * i;
         }
 
-        public static void ScaleBy(this Vector3 vector, float scale)
+        public static Vector3 ScaleBy(this Vector3 vector, float scale)
         {
-            vector *= scale;
+            return vector * scale;
+        }
+
+        public static Vector3 Clone(this Vector3 vector)
+        {
+            return new Vector3(vector.X, vector.Y, vector.Z);
         }
     }
 }
