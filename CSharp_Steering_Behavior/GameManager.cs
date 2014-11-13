@@ -23,7 +23,7 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
-            const int NumberOfTriangles = 2;
+            const int NumberOfTriangles = 5;
 
             _playerTriangles = new Triangle[NumberOfTriangles];
             var random = new Random();
@@ -77,8 +77,13 @@ namespace CSharp_Steering_Behavior
             //    triangle.MoveTwoardsTarget(mosueVector, triangle.Steering.Wander);    
             //}
 
-            //_playerTriangles[0].MoveTwoardsTarget(mosueVector, _playerTriangles[0].Steering.Wander);
-            _playerTriangles[1].PersuitTriangle(_playerTriangles[0]);
+            _playerTriangles[0].MoveTwoardsTarget(mosueVector);
+
+            for (int i = 1; i < 5; i++)
+            {
+                _playerTriangles[i].EvadeTriangle(_playerTriangles[0]);    
+            }
+            
         }
 
         public void Update(GameTime gameTime)

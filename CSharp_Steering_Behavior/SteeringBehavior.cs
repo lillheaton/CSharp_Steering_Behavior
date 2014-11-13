@@ -85,11 +85,12 @@ namespace CSharp_Steering_Behavior
 
         public void Pursuit(Triangle triangle)
         {
-            var distance = triangle.Steering.Position - this.Position;
-            var T = distance.Length() / MaxVelocity;
+            this.Seek(this.GetFuturePositionOfTarget(triangle));
+        }
 
-            var futurePosition = triangle.Steering.Position + triangle.Steering.Velocity * T;
-            this.Seek(futurePosition);
+        public void Evade(Triangle triangle)
+        {
+            this.Flee(this.GetFuturePositionOfTarget(triangle));
         }
 
         private void AddingForces()
@@ -103,6 +104,16 @@ namespace CSharp_Steering_Behavior
             Angle = this.GetAngle(Velocity);
 
             Position = Position + Velocity;            
+        }
+
+        private Vector3 GetFuturePositionOfTarget(Triangle triangle)
+        {
+            var distance = triangle.Steering.Position - this.Position;
+
+            // T = updated ahead
+            var T = distance.Length() / MaxVelocity;
+
+            return triangle.Steering.Position + triangle.Steering.Velocity * T;
         }
 
         private float GetAngle(Vector3 vector)

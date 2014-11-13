@@ -69,6 +69,12 @@ namespace CSharp_Steering_Behavior.Primitives
             this._pursuitMethod = Steering.Pursuit;
         }
 
+        public void EvadeTriangle(Triangle triangle)
+        {
+            this._pursuitTriangle = triangle;
+            this._pursuitMethod = Steering.Evade;
+        }
+
         public void Update(GameTime gameTime)
         {
             if (this._pursuitTriangle != null)
