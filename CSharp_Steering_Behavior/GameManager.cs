@@ -11,7 +11,7 @@ namespace CSharp_Steering_Behavior
     {
         private GraphicsDevice _graphics;
         private GraphicsDeviceManager _graphicsDevice;
-        private Triangle _playerTriangle;
+        private Triangle[] _playerTriangles;
 
         public GameManager(GraphicsDeviceManager graphicsDevice, GraphicsDevice graphics)
         {
@@ -23,7 +23,20 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
-            _playerTriangle = new Triangle(new Vector3(300, 200, 0));
+            const int NumberOfTriangles = 2;
+
+            _playerTriangles = new Triangle[NumberOfTriangles];
+            var random = new Random();
+
+            for (int i = 0; i < NumberOfTriangles; i++)
+            {
+                this._playerTriangles[i] =
+                    new Triangle(
+                        new Vector3(
+                            random.Next(0, _graphicsDevice.PreferredBackBufferWidth),
+                            random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
+                            0));
+            }
         }
 
         public void UpdateKeyboardInput()
@@ -57,7 +70,15 @@ namespace CSharp_Steering_Behavior
         public void UpdateMouseInput()
         {
             var mouse = Mouse.GetState();
-            _playerTriangle.MoveTwoardsTarget(new Vector3(mouse.X, mouse.Y, 0));
+            var mosueVector = new Vector3(mouse.X, mouse.Y, 0);
+
+            //foreach (var triangle in _playerTriangles)
+            //{
+            //    triangle.MoveTwoardsTarget(mosueVector, triangle.Steering.Wander);    
+            //}
+
+            //_playerTriangles[0].MoveTwoardsTarget(mosueVector, _playerTriangles[0].Steering.Wander);
+            _playerTriangles[1].PersuitTriangle(_playerTriangles[0]);
         }
 
         public void Update(GameTime gameTime)
@@ -65,19 +86,28 @@ namespace CSharp_Steering_Behavior
             UpdateKeyboardInput();
             UpdateMouseInput();
 
-            _playerTriangle.Update(gameTime);
+            foreach (var triangle in _playerTriangles)
+            {
+                triangle.Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, PrimitiveBatch primitiveBatch)
         {
             // Draw Triangles
             primitiveBatch.Begin(PrimitiveType.TriangleList);
-            _playerTriangle.Draw(primitiveBatch);
+            foreach (var triangle in _playerTriangles)
+            {
+                triangle.Draw(primitiveBatch);
+            }
             primitiveBatch.End();
 
             // Draw lines
             primitiveBatch.Begin(PrimitiveType.LineList);
-            _playerTriangle.DrawForces(primitiveBatch);
+            foreach (var triangle in _playerTriangles)
+            {
+                triangle.DrawForces(primitiveBatch);
+            }
             primitiveBatch.End();
         }
     }

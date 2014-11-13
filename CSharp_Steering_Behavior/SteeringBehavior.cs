@@ -1,5 +1,5 @@
 ﻿using CSharp_Steering_Behavior.Extensions;
-using CSharp_Steering_Behavior.Utilities;
+using CSharp_Steering_Behavior.Primitives;
 
 using Microsoft.Xna.Framework;
 using System;
@@ -9,6 +9,7 @@ namespace CSharp_Steering_Behavior
     public class SteeringBehavior
     {
         public float Angle { get; private set; }
+        public Vector3 Position { get; set; }
         public Vector3 Velocity { get; private set; }
         public Vector3 DesiredVelocity { get; private set; }
         public Vector3 Steering { get; private set; }
@@ -29,19 +30,19 @@ namespace CSharp_Steering_Behavior
         // This number should be recived
         private const int Mass = 20;
 
-        public SteeringBehavior()
+        public SteeringBehavior(Vector3 position)
         {
+            Position = position;
             Angle = 0;
+            random = new Random(DateTime.Now.Millisecond);
+
             Velocity = new Vector3(-1, -2, 0);
-
             Velocity = Velocity.Truncate(MaxVelocity);
-
-            random = new Random();
         }
 
-        public Vector3 Seek(Vector3 position, Vector3 target)
+        public void Seek(Vector3 target)
         {
-            DesiredVelocity = target - position;
+            DesiredVelocity = target - Position;
 
             float distance = DesiredVelocity.Length();
 
@@ -57,18 +58,18 @@ namespace CSharp_Steering_Behavior
             }
 
             Steering = DesiredVelocity - Velocity;
-            return this.AddingForces(position);
+            this.AddingForces();
         }
 
-        public Vector3 Flee(Vector3 position, Vector3 target)
+        public void Flee(Vector3 target)
         {
-            DesiredVelocity = Vector3.Normalize(position - target) * MaxVelocity;
+            DesiredVelocity = Vector3.Normalize(Position - target) * MaxVelocity;
             Steering = DesiredVelocity - Velocity;
 
-            return this.AddingForces(position);
+            this.AddingForces();
         }
 
-        public Vector3 Wander(Vector3 position)
+        public void Wander()
         {
             CircleCenter = Vector3.Normalize(Velocity).ScaleBy(CircleDistance);
 
@@ -79,10 +80,19 @@ namespace CSharp_Steering_Behavior
 
             Steering = CircleCenter + displacement;
 
-            return this.AddingForces(position);
+            this.AddingForces();
         }
 
-        private Vector3 AddingForces(Vector3 position)
+        public void Pursuit(Triangle triangle)
+        {
+            var distance = triangle.Steering.Position - this.Position;
+            var T = distance.Length() / MaxVelocity;
+
+            var futurePosition = triangle.Steering.Position + triangle.Steering.Velocity * T;
+            this.Seek(futurePosition);
+        }
+
+        private void AddingForces()
         {
             Steering.Truncate(MaxForce);
             Steering = Steering.ScaleBy((float)1 / Mass);
@@ -92,7 +102,7 @@ namespace CSharp_Steering_Behavior
 
             Angle = this.GetAngle(Velocity);
 
-            return position + Velocity;
+            Position = Position + Velocity;            
         }
 
         private float GetAngle(Vector3 vector)
