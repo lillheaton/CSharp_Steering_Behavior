@@ -81,7 +81,8 @@ namespace CSharp_Steering_Behavior
 
             for (int i = 1; i < 5; i++)
             {
-                _playerTriangles[i].EvadeTriangle(_playerTriangles[0]);    
+                _playerTriangles[i].MoveTwoardsTarget(mosueVector);
+                _playerTriangles[i].Evade(_playerTriangles[0]);
             }
             
         }

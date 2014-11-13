@@ -39,6 +39,7 @@
     <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="IBoid.cs" />
     <Compile Include="PrimitiveBatch.cs" />
     <Compile Include="Primitives\Triangle.cs" />
     <Compile Include="Program.cs" />

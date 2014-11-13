@@ -5,19 +5,19 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CSharp_Steering_Behavior.Primitives
 {
-    public class Triangle
+    public class Triangle : IBoid
     {
-        public SteeringBehavior Steering { get; private set; }
+        public SteeringBehavior SteeringBehavior { get; set; }
+        public Vector3 Position { get; set; }
+        public Vector3 Velocity { get; set; }
 
-        private Vector3 _target;
         private Vector3[] _localLines;
         private Vector3[] _transformedLines;
         private VertexPositionColor[] _vertices;
         private Matrix _centerMatrix;
-        private Action<Vector3> _steeringMethod;
 
-        private Action<Triangle> _pursuitMethod;
-        private Triangle _pursuitTriangle;
+        private Vector3 _target;
+        private IBoid _evadeBoid;
 
         public Triangle(Vector3 top, Vector3 right, Vector3 left)
         {
@@ -32,7 +32,7 @@ namespace CSharp_Steering_Behavior.Primitives
                 new Vector3(-12, 40, 0)
             );
 
-            this.Steering.Position = position;
+            this.Position = position;
         }
 
         private void Init(Vector3 top, Vector3 right, Vector3 left)
@@ -43,7 +43,7 @@ namespace CSharp_Steering_Behavior.Primitives
             this._centerMatrix = Matrix.CreateTranslation(centerPosition);
 
             // Set start position to centerPosition
-            this.Steering = new SteeringBehavior(-centerPosition);
+            this.Position = -centerPosition;
 
             this._transformedLines = new Vector3[3];
             this._localLines = new Vector3[3];
@@ -55,43 +55,60 @@ namespace CSharp_Steering_Behavior.Primitives
             _vertices[0] = new VertexPositionColor(top, Color.Red);
             _vertices[1] = new VertexPositionColor(right, Color.Red);
             _vertices[2] = new VertexPositionColor(left, Color.Red);
+
+            this.SteeringBehavior = new SteeringBehavior(this);
         }
 
         public void MoveTwoardsTarget(Vector3 target)
         {
             _target = target;
-            _steeringMethod = Steering.Seek;
         }
 
-        public void PersuitTriangle(Triangle triangle)
-        {
-            this._pursuitTriangle = triangle;
-            this._pursuitMethod = Steering.Pursuit;
-        }
+        //public void PersuitTriangle(Triangle triangle)
+        //{
+        //    this._pursuitTriangle = triangle;
+        //    this._pursuitMethod = SteeringBehavior.Pursuit;
+        //}
 
-        public void EvadeTriangle(Triangle triangle)
+        public void Evade(IBoid boid)
         {
-            this._pursuitTriangle = triangle;
-            this._pursuitMethod = Steering.Evade;
+            this._evadeBoid = boid;
         }
 
         public void Update(GameTime gameTime)
         {
-            if (this._pursuitTriangle != null)
+            if (_target != Vector3.Zero)
             {
-                _pursuitMethod(_pursuitTriangle);
-            }
-            else if (_steeringMethod != null)
-            {
-                _steeringMethod(_target);    
-            }
-            else
-            {
-                Steering.Wander();
+                SteeringBehavior.Seek(_target);
             }
 
-            var world = this._centerMatrix * Matrix.CreateRotationZ(this.Steering.Angle) * Matrix.CreateTranslation(this.Steering.Position);
+            if (_evadeBoid != null)
+            {
+                SteeringBehavior.Evade(_evadeBoid);
+            }
+
+            // If not clear target, just wander around...
+            if(_target == Vector3.Zero && _evadeBoid == null)
+            {
+                SteeringBehavior.Wander();
+            }
+
+            // Update steering
+            SteeringBehavior.Update(gameTime);
+
+            // Calculate world and transform lines
+            var world = this._centerMatrix * Matrix.CreateRotationZ(this.SteeringBehavior.Angle) * Matrix.CreateTranslation(this.Position);
             Vector3.Transform(this._localLines, ref world, _transformedLines);
+        }
+
+        public float GetMaxVelocity()
+        {
+            return 3;
+        }
+
+        public float GetMass()
+        {
+            return 20;
         }
 
         public void Draw(PrimitiveBatch primitiveBatch)
@@ -107,19 +124,19 @@ namespace CSharp_Steering_Behavior.Primitives
         public void DrawForces(PrimitiveBatch primitiveBatch)
         {
             const int Scale = 100;
-            var velocityForce = Vector3.Normalize(this.Steering.Velocity);
-            var steeringForce = Vector3.Normalize(this.Steering.Steering);
-            var desiredVelocityForce = Vector3.Normalize(this.Steering.DesiredVelocity);
+            var velocityForce = Vector3.Normalize(Velocity);
+            var steeringForce = Vector3.Normalize(this.SteeringBehavior.Steering);
+            var desiredVelocityForce = Vector3.Normalize(this.SteeringBehavior.DesiredVelocity);
 
             var forces = new VertexPositionColor[6];
-            forces[0] = new VertexPositionColor(this.Steering.Position, Color.Green);
-            forces[1] = new VertexPositionColor(this.Steering.Position + velocityForce * Scale, Color.Green);
+            forces[0] = new VertexPositionColor(this.Position, Color.Green);
+            forces[1] = new VertexPositionColor(this.Position + velocityForce * Scale, Color.Green);
 
-            forces[2] = new VertexPositionColor(this.Steering.Position, Color.Gray);
-            forces[3] = new VertexPositionColor(this.Steering.Position + desiredVelocityForce * Scale, Color.Green);
+            forces[2] = new VertexPositionColor(this.Position, Color.Gray);
+            forces[3] = new VertexPositionColor(this.Position + desiredVelocityForce * Scale, Color.Green);
 
-            forces[4] = new VertexPositionColor(this.Steering.Position, Color.Red);
-            forces[5] = new VertexPositionColor(this.Steering.Position + steeringForce * Scale, Color.Green);
+            forces[4] = new VertexPositionColor(this.Position, Color.Red);
+            forces[5] = new VertexPositionColor(this.Position + steeringForce * Scale, Color.Green);
 
             // Draw forces
             primitiveBatch.AddVertices(forces);
