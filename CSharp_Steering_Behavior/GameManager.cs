@@ -12,6 +12,7 @@ namespace CSharp_Steering_Behavior
         private GraphicsDevice _graphics;
         private GraphicsDeviceManager _graphicsDevice;
         private Triangle[] _playerTriangles;
+        private IObstacle[] _obstacles;
 
         public GameManager(GraphicsDeviceManager graphicsDevice, GraphicsDevice graphics)
         {
@@ -37,6 +38,10 @@ namespace CSharp_Steering_Behavior
                             random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
                             0));
             }
+
+            _obstacles = new IObstacle[2];
+            _obstacles[0] = new CircleObstacle(new Vector3(10, 10, 0), 20);
+            _obstacles[1] = new CircleObstacle(new Vector3(200, 200, 0), 20);
         }
 
         public void UpdateKeyboardInput()
@@ -113,6 +118,14 @@ namespace CSharp_Steering_Behavior
             foreach (var triangle in _playerTriangles)
             {
                 triangle.DrawForces(primitiveBatch);
+            }
+            primitiveBatch.End();
+
+            // Draw circles
+            primitiveBatch.Begin(PrimitiveType.LineStrip);
+            foreach (var obstacle in _obstacles)
+            {
+                obstacle.Draw(primitiveBatch);
             }
             primitiveBatch.End();
         }

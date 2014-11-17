@@ -15,11 +15,13 @@ namespace CSharp_Steering_Behavior
         private Random random;
         private float _wanderAngle = 0;
 
+        private const int MaxSeeAhead = 4;
         private const float MaxForce = 5.4f;
         private const int SlowingRadius = 100;
         private const int CircleDistance = 6;
         private const int CircleRadius = 8;
         private const int AngleChange = 1;
+        private const float MaxAvoidanceForce = 5;
 
         public SteeringBehavior(IBoid host)
         {
@@ -59,6 +61,10 @@ namespace CSharp_Steering_Behavior
             this.Flee(this.GetFuturePositionOfTarget(targetBoid));
         }
 
+        public void CollisionAvoidance(IObstacle[] objectsToAvoid)
+        {
+            Steering = Steering + this.DoCollisionAvoidance(objectsToAvoid);
+        }
 
 
         public void Update(GameTime gameTime)
@@ -113,6 +119,56 @@ namespace CSharp_Steering_Behavior
             _wanderAngle += (float)random.NextDouble() * AngleChange - AngleChange * 0.5f;
 
             return circleCenter + displacement;
+        }        
+
+        private Vector3 DoCollisionAvoidance(IObstacle[] objectsToAvoid)
+        {
+            // Ahead is the same as the velocity vector except it's longer
+            var ahead = Host.Position + Vector3.Normalize(Host.Velocity) * MaxSeeAhead;
+            var ahead2 = Host.Position + Vector3.Normalize(Host.Velocity) * MaxSeeAhead * 0.5f;
+
+            var threat = this.MostThreatingObstacle(ahead, ahead2, objectsToAvoid);
+            var avoidanceForce = new Vector3();
+
+            if (threat != null)
+            {
+                avoidanceForce.X = ahead.X - threat.Position.X;
+                avoidanceForce.Y = ahead.Y - threat.Position.Y;
+
+                avoidanceForce = Vector3.Normalize(avoidanceForce);
+                avoidanceForce = avoidanceForce.ScaleBy(MaxAvoidanceForce);
+            }
+            //else
+            //{
+            //    // nullify the avoidance force
+            //    avoidance = avoidance.ScaleBy(0);
+            //}
+
+            return avoidanceForce;
+        }
+
+        private IObstacle MostThreatingObstacle(Vector3 ahead, Vector3 ahead2, IObstacle[] obstacles)
+        {
+            IObstacle mostThreating = null;
+
+            foreach (var obstacle in obstacles)
+            {
+                if (this.LineIntersectsCircle(ahead, ahead2, obstacle))
+                {
+                    if (mostThreating == null || Vector3.Distance(Host.Position, obstacle.Position) < Vector3.Distance(Host.Position, mostThreating.Position))
+                    {
+                        mostThreating = obstacle;
+                    }
+                }
+            }
+
+            return mostThreating;
+        }
+
+        private bool LineIntersectsCircle(Vector3 ahead, Vector3 ahead2, IObstacle obstacle)
+        {
+            return Vector3.Distance(obstacle.Position, ahead) <= obstacle.GetRadius()
+                   || Vector3.Distance(obstacle.Position, ahead2) <= obstacle.GetRadius();
         }
 
         private Vector3 GetFuturePositionOfTarget(IBoid targetBoid)
