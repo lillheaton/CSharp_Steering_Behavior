@@ -28,7 +28,7 @@ namespace CSharp_Steering_Behavior
             {
                 float angle = (float)(i / 100.0 * Math.PI * 2);
                 _vertices[i] = new VertexPositionColor();
-                _vertices[i].Position = new Vector3(200 + (float)Math.Cos(angle) * 100, 200 + (float)Math.Sin(angle) * 100, 0);
+                _vertices[i].Position = new Vector3(Position.X + (float)Math.Cos(angle) * _radius, Position.Y + (float)Math.Sin(angle) * _radius, 0);
                 _vertices[i].Color = Color.Black;
             }
             _vertices[99] = _vertices[0];

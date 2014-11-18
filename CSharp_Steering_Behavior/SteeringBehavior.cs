@@ -15,13 +15,13 @@ namespace CSharp_Steering_Behavior
         private Random random;
         private float _wanderAngle = 0;
 
-        private const int MaxSeeAhead = 4;
+        private const int MaxSeeAhead = 100;
         private const float MaxForce = 5.4f;
         private const int SlowingRadius = 100;
         private const int CircleDistance = 6;
         private const int CircleRadius = 8;
         private const int AngleChange = 1;
-        private const float MaxAvoidanceForce = 5;
+        private const float MaxAvoidanceForce = 350;
 
         public SteeringBehavior(IBoid host)
         {
@@ -63,7 +63,7 @@ namespace CSharp_Steering_Behavior
 
         public void CollisionAvoidance(IObstacle[] objectsToAvoid)
         {
-            Steering = Steering + this.DoCollisionAvoidance(objectsToAvoid);
+            Steering = Vector3.Add(Steering, this.DoCollisionAvoidance(objectsToAvoid));
         }
 
 
@@ -138,11 +138,11 @@ namespace CSharp_Steering_Behavior
                 avoidanceForce = Vector3.Normalize(avoidanceForce);
                 avoidanceForce = avoidanceForce.ScaleBy(MaxAvoidanceForce);
             }
-            //else
-            //{
-            //    // nullify the avoidance force
-            //    avoidance = avoidance.ScaleBy(0);
-            //}
+            else
+            {
+                // nullify the avoidance force
+                avoidanceForce = avoidanceForce.ScaleBy(0);
+            }
 
             return avoidanceForce;
         }
@@ -167,6 +167,7 @@ namespace CSharp_Steering_Behavior
 
         private bool LineIntersectsCircle(Vector3 ahead, Vector3 ahead2, IObstacle obstacle)
         {
+            Console.WriteLine(Vector3.Distance(obstacle.Position, ahead));
             return Vector3.Distance(obstacle.Position, ahead) <= obstacle.GetRadius()
                    || Vector3.Distance(obstacle.Position, ahead2) <= obstacle.GetRadius();
         }

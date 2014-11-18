@@ -63,9 +63,19 @@ namespace CSharp_Steering_Behavior
 
             var primitivesCount = _positionInBuffer / this.NumVertsPerPrimitive();
 
-            if (primitivesCount > 0)
+            if (_primitiveType == PrimitiveType.LineStrip)
             {
-                _graphics.DrawUserPrimitives<VertexPositionColor>(_primitiveType, _vertices, 0, primitivesCount);  
+                for (int i = 0; i < primitivesCount; i++)
+                {
+                    _graphics.DrawUserPrimitives<VertexPositionColor>(_primitiveType, _vertices, i * this.NumVertsPerPrimitive(), this.NumVertsPerPrimitive() - 1);      
+                }
+            }
+            else
+            {
+                if (primitivesCount > 0)
+                {
+                    _graphics.DrawUserPrimitives<VertexPositionColor>(_primitiveType, _vertices, 0, primitivesCount);
+                }    
             }
 
             _positionInBuffer = 0;

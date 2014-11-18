@@ -24,7 +24,7 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
-            const int NumberOfTriangles = 5;
+            const int NumberOfTriangles = 1;
 
             _playerTriangles = new Triangle[NumberOfTriangles];
             var random = new Random();
@@ -40,8 +40,10 @@ namespace CSharp_Steering_Behavior
             }
 
             _obstacles = new IObstacle[2];
-            _obstacles[0] = new CircleObstacle(new Vector3(10, 10, 0), 20);
-            _obstacles[1] = new CircleObstacle(new Vector3(200, 200, 0), 20);
+            _obstacles[0] = new CircleObstacle(new Vector3(100, 100, 0), 20);
+            _obstacles[1] = new CircleObstacle(new Vector3(200, 200, 0), 50);
+
+            _playerTriangles[0].Obstacles = _obstacles;
         }
 
         public void UpdateKeyboardInput()
@@ -84,11 +86,11 @@ namespace CSharp_Steering_Behavior
 
             _playerTriangles[0].MoveTwoardsTarget(mosueVector);
 
-            for (int i = 1; i < 5; i++)
-            {
-                _playerTriangles[i].MoveTwoardsTarget(mosueVector);
-                _playerTriangles[i].Evade(_playerTriangles[0]);
-            }
+            //for (int i = 1; i < 5; i++)
+            //{
+            //    _playerTriangles[i].MoveTwoardsTarget(mosueVector);
+            //    _playerTriangles[i].Evade(_playerTriangles[0]);
+            //}
             
         }
 

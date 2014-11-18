@@ -1,5 +1,7 @@
 ﻿using System;
 
+using CSharp_Steering_Behavior.Extensions;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -10,6 +12,7 @@ namespace CSharp_Steering_Behavior.Primitives
         public SteeringBehavior SteeringBehavior { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 Velocity { get; set; }
+        public IObstacle[] Obstacles { get; set; }
 
         private Vector3[] _localLines;
         private Vector3[] _transformedLines;
@@ -56,6 +59,9 @@ namespace CSharp_Steering_Behavior.Primitives
             _vertices[1] = new VertexPositionColor(right, Color.Red);
             _vertices[2] = new VertexPositionColor(left, Color.Red);
 
+            Velocity = new Vector3(-1, -2, 0);
+            Velocity = Velocity.Truncate(this.GetMaxVelocity());
+
             this.SteeringBehavior = new SteeringBehavior(this);
         }
 
@@ -80,6 +86,7 @@ namespace CSharp_Steering_Behavior.Primitives
             if (_target != Vector3.Zero)
             {
                 SteeringBehavior.Seek(_target);
+                SteeringBehavior.CollisionAvoidance(Obstacles);
             }
 
             if (_evadeBoid != null)
@@ -91,6 +98,7 @@ namespace CSharp_Steering_Behavior.Primitives
             if(_target == Vector3.Zero && _evadeBoid == null)
             {
                 SteeringBehavior.Wander();
+                SteeringBehavior.CollisionAvoidance(Obstacles);
             }
 
             // Update steering
