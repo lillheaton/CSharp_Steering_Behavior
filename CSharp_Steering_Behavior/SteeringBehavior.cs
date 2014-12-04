@@ -1,6 +1,4 @@
 ﻿using CSharp_Steering_Behavior.Extensions;
-
-using Microsoft.Win32;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -14,6 +12,7 @@ namespace CSharp_Steering_Behavior
 
         public Vector3 DesiredVelocity { get; private set; }
 
+        private int _currentNodePath = 0;
         private Random random;
         private float _wanderAngle = 0;
 
@@ -68,6 +67,10 @@ namespace CSharp_Steering_Behavior
             Steering = Vector3.Add(Steering, this.DoCollisionAvoidance(objectsToAvoid));
         }
 
+        public void FollowPath(Path path)
+        {
+            this.Seek(this.DoFollowPath(path));
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -149,6 +152,27 @@ namespace CSharp_Steering_Behavior
             }
 
             return avoidanceForce;
+        }
+
+        private Vector3 DoFollowPath(Path path)
+        {
+            if (path == null)
+            {
+                throw new Exception("Path should not be null");
+            }
+
+            var nodes = path.Get();
+            var target = nodes[_currentNodePath];
+
+            if (Vector3.Distance(Host.Position, target) <= 10)
+            {
+                if (_currentNodePath < nodes.Count)
+                {
+                    _currentNodePath++;
+                }
+            }
+
+            return target;
         }
 
         private IObstacle MostThreatingObstacle(Vector3 ahead, IObstacle[] obstacles)
