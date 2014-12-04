@@ -3,7 +3,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace CSharp_Steering_Behavior
+namespace CSharp_Steering_Behavior.Primitives
 {
     public class CircleObstacle : IObstacle
     {
@@ -14,34 +14,34 @@ namespace CSharp_Steering_Behavior
 
         public CircleObstacle(Vector3 position, float radius)
         {
-            _radius = radius;
-            Position = position;
+            this._radius = radius;
+            this.Position = position;
 
             this.Init();
         }
 
         private void Init()
         {
-            _vertices = new VertexPositionColor[100];
+            this._vertices = new VertexPositionColor[100];
 
             for (int i = 0; i < 99; i++)
             {
                 float angle = (float)(i / 100.0 * Math.PI * 2);
-                _vertices[i] = new VertexPositionColor();
-                _vertices[i].Position = new Vector3(Position.X + (float)Math.Cos(angle) * _radius, Position.Y + (float)Math.Sin(angle) * _radius, 0);
-                _vertices[i].Color = Color.Black;
+                this._vertices[i] = new VertexPositionColor();
+                this._vertices[i].Position = new Vector3(this.Position.X + (float)Math.Cos(angle) * this._radius, this.Position.Y + (float)Math.Sin(angle) * this._radius, 0);
+                this._vertices[i].Color = Color.Black;
             }
-            _vertices[99] = _vertices[0];
+            this._vertices[99] = this._vertices[0];
         }
 
         public void Draw(PrimitiveBatch primitiveBatch)
         {
-            primitiveBatch.AddVertices(_vertices);
+            primitiveBatch.AddVertices(this._vertices);
         }
 
         public float GetRadius()
         {
-            return 4.5f;
+            return this._radius;
         }
     }
 }

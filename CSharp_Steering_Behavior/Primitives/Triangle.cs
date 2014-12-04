@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 using CSharp_Steering_Behavior.Extensions;
 
 using Microsoft.Xna.Framework;
@@ -95,7 +94,7 @@ namespace CSharp_Steering_Behavior.Primitives
             }
 
             // If not clear target, just wander around...
-            if(_target == Vector3.Zero && _evadeBoid == null)
+            if (_target == Vector3.Zero && _evadeBoid == null)
             {
                 SteeringBehavior.Wander();
                 SteeringBehavior.CollisionAvoidance(Obstacles);
