@@ -1,6 +1,5 @@
-﻿
-using CSharp_Steering_Behavior.Extensions;
-
+﻿using CSharp_Steering_Behavior.Extensions;
+using Lillheaton.Monogame.Steering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

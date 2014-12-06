@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
-namespace CSharp_Steering_Behavior
+namespace Lillheaton.Monogame.Steering
 {
     public class Path
     {
@@ -24,7 +24,7 @@ namespace CSharp_Steering_Behavior
 
         public List<Vector3> Get()
         {
-            return _path;
+            return this._path;
         } 
     }
 }

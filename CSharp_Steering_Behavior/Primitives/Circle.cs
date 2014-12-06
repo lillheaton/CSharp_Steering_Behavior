@@ -1,14 +1,13 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace CSharp_Steering_Behavior.Primitives
 {
-    public class CircleObstacle : IObstacle
+    public class CircleObstacle : IDrawableObstacle
     {
         public Vector3 Position { get; set; }
-
+        
         private VertexPositionColor[] _vertices;
         private float _radius;
 

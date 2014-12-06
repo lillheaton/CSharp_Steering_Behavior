@@ -1,7 +1,6 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
-namespace CSharp_Steering_Behavior
+namespace Lillheaton.Monogame.Steering
 {
     public interface IBoid
     {

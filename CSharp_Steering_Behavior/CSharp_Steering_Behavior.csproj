@@ -35,19 +35,16 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Path.cs" />
+    <Compile Include="Extensions\VectorExtensions.cs" />
+    <Compile Include="IDrawableObstacle.cs" />
     <Compile Include="Primitives\Circle.cs" />
     <Compile Include="Direction.cs" />
-    <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameManager.cs" />
-    <Compile Include="IBoid.cs" />
-    <Compile Include="IObstacle.cs" />
     <Compile Include="PrimitiveBatch.cs" />
     <Compile Include="Primitives\Triangle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SteeringBehavior.cs" />
     <Compile Include="Utilities\VectorUtils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +68,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lillheaton.Monogame.Steering\Lillheaton.Monogame.Steering.csproj">
+      <Project>{a02c1150-189f-499d-975d-fc092c8b8158}</Project>
+      <Name>Lillheaton.Monogame.Steering</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

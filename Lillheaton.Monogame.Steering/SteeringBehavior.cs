@@ -1,8 +1,8 @@
-﻿using CSharp_Steering_Behavior.Extensions;
+﻿using Lillheaton.Monogame.Steering.Extensions;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace CSharp_Steering_Behavior
+namespace Lillheaton.Monogame.Steering
 {
     public class SteeringBehavior
     {
@@ -32,24 +32,24 @@ namespace CSharp_Steering_Behavior
 
         private void Init()
         {
-            Angle = 0;
-            random = new Random(DateTime.Now.Millisecond);
-            Host.Velocity = Host.Velocity.Truncate(Host.GetMaxVelocity());
+            this.Angle = 0;
+            this.random = new Random(DateTime.Now.Millisecond);
+            this.Host.Velocity = this.Host.Velocity.Truncate(this.Host.GetMaxVelocity());
         }
 
         public void Seek(Vector3 target)
         {
-            Steering = Vector3.Add(Steering, this.DoSeek(target));
+            this.Steering = Vector3.Add(this.Steering, this.DoSeek(target));
         }
 
         public void Flee(Vector3 target)
         {
-            Steering = Vector3.Add(Steering, this.DoFlee(target));
+            this.Steering = Vector3.Add(this.Steering, this.DoFlee(target));
         }
 
         public void Wander()
         {
-            Steering = Vector3.Add(Steering, this.DoWander());
+            this.Steering = Vector3.Add(this.Steering, this.DoWander());
         }
 
         public void Pursuit(IBoid targetBoid)
@@ -64,7 +64,7 @@ namespace CSharp_Steering_Behavior
 
         public void CollisionAvoidance(IObstacle[] objectsToAvoid)
         {
-            Steering = Vector3.Add(Steering, this.DoCollisionAvoidance(objectsToAvoid));
+            this.Steering = Vector3.Add(this.Steering, this.DoCollisionAvoidance(objectsToAvoid));
         }
 
         public void FollowPath(Path path)
@@ -74,15 +74,15 @@ namespace CSharp_Steering_Behavior
 
         public void Update(GameTime gameTime)
         {
-            Steering.Truncate(MaxForce);
-            Steering = Steering.ScaleBy((float)1 / Host.GetMass());
+            this.Steering.Truncate(MaxForce);
+            this.Steering = this.Steering.ScaleBy((float)1 / this.Host.GetMass());
 
-            Host.Velocity = Host.Velocity + Steering;
-            Host.Velocity = Host.Velocity.Truncate(Host.GetMaxVelocity());
+            this.Host.Velocity = this.Host.Velocity + this.Steering;
+            this.Host.Velocity = this.Host.Velocity.Truncate(this.Host.GetMaxVelocity());
 
-            Angle = this.GetAngle(Host.Velocity);
+            this.Angle = this.GetAngle(this.Host.Velocity);
 
-            Host.Position = Host.Position + Host.Velocity;
+            this.Host.Position = this.Host.Position + this.Host.Velocity;
         }
 
 
@@ -90,49 +90,49 @@ namespace CSharp_Steering_Behavior
 
         private Vector3 DoSeek(Vector3 target)
         {
-            DesiredVelocity = target - Host.Position;
+            this.DesiredVelocity = target - this.Host.Position;
 
-            float distance = DesiredVelocity.Length();
+            float distance = this.DesiredVelocity.Length();
 
             // Inside slowing radius
             if (distance <= SlowingRadius)
             {
-                DesiredVelocity = Vector3.Normalize(DesiredVelocity) * Host.GetMaxVelocity() * (distance / SlowingRadius);
+                this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity() * (distance / SlowingRadius);
             }
             else
             {
                 // Far away
-                DesiredVelocity = Vector3.Normalize(DesiredVelocity) * Host.GetMaxVelocity();
+                this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity();
             }
 
-            return DesiredVelocity - Host.Velocity;
+            return this.DesiredVelocity - this.Host.Velocity;
         }
 
         private Vector3 DoFlee(Vector3 target)
         {
-            DesiredVelocity = Vector3.Normalize(Host.Position - target) * Host.GetMaxVelocity();
-            return DesiredVelocity - Host.Velocity;
+            this.DesiredVelocity = Vector3.Normalize(this.Host.Position - target) * this.Host.GetMaxVelocity();
+            return this.DesiredVelocity - this.Host.Velocity;
         }
 
         private Vector3 DoWander()
         {
-            var circleCenter = Vector3.Normalize(Host.Velocity).ScaleBy(CircleDistance);
+            var circleCenter = Vector3.Normalize(this.Host.Velocity).ScaleBy(CircleDistance);
 
             var displacement = new Vector3(0, -1, 0).ScaleBy(CircleRadius);
 
-            this.SetAngle(ref displacement, _wanderAngle);
-            _wanderAngle += (float)random.NextDouble() * AngleChange - AngleChange * 0.5f;
+            this.SetAngle(ref displacement, this._wanderAngle);
+            this._wanderAngle += (float)this.random.NextDouble() * AngleChange - AngleChange * 0.5f;
 
             return circleCenter + displacement;
         }        
 
         private Vector3 DoCollisionAvoidance(IObstacle[] objectsToAvoid)
         {
-            var tv = Vector3.Normalize(Host.Velocity);
-            tv = tv.ScaleBy(MaxSeeAhead * Host.Velocity.Length() / Host.GetMaxVelocity());
+            var tv = Vector3.Normalize(this.Host.Velocity);
+            tv = tv.ScaleBy(MaxSeeAhead * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
 
             // Ahead is the same as the velocity vector except it's longer
-            var ahead = Vector3.Add(Host.Position, tv);
+            var ahead = Vector3.Add(this.Host.Position, tv);
 
             var threat = this.MostThreatingObstacle(ahead, objectsToAvoid);
             var avoidanceForce = new Vector3();
@@ -162,13 +162,13 @@ namespace CSharp_Steering_Behavior
             }
 
             var nodes = path.Get();
-            var target = nodes[_currentNodePath];
+            var target = nodes[this._currentNodePath];
 
-            if (Vector3.Distance(Host.Position, target) <= 10)
+            if (Vector3.Distance(this.Host.Position, target) <= 10)
             {
-                if (_currentNodePath < nodes.Count)
+                if (this._currentNodePath < nodes.Count)
                 {
-                    _currentNodePath++;
+                    this._currentNodePath++;
                 }
             }
 
@@ -181,7 +181,7 @@ namespace CSharp_Steering_Behavior
 
             foreach (var obstacle in obstacles)
             {
-                if (this.LineIntersectsCircle(ahead, obstacle) && (mostThreating == null || Vector3.Distance(Host.Position, obstacle.Position) < Vector3.Distance(Host.Position, mostThreating.Position)))
+                if (this.LineIntersectsCircle(ahead, obstacle) && (mostThreating == null || Vector3.Distance(this.Host.Position, obstacle.Position) < Vector3.Distance(this.Host.Position, mostThreating.Position)))
                 {
                     mostThreating = obstacle;
                 }
@@ -192,22 +192,22 @@ namespace CSharp_Steering_Behavior
 
         private bool LineIntersectsCircle(Vector3 ahead, IObstacle obstacle)
         {
-            var tv = Vector3.Normalize(Host.Velocity);
-            tv = tv.ScaleBy(MaxSeeAhead * 0.5f * Host.Velocity.Length() / Host.GetMaxVelocity());
+            var tv = Vector3.Normalize(this.Host.Velocity);
+            tv = tv.ScaleBy(MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
 
-            var ahead2 = Vector3.Add(Host.Position, tv);
+            var ahead2 = Vector3.Add(this.Host.Position, tv);
 
             return Vector3.Distance(obstacle.Position, ahead) <= obstacle.GetRadius()
                    || Vector3.Distance(obstacle.Position, ahead2) <= obstacle.GetRadius()
-                   || Vector3.Distance(obstacle.Position, Host.Position) <= obstacle.GetRadius();
+                   || Vector3.Distance(obstacle.Position, this.Host.Position) <= obstacle.GetRadius();
         }
 
         private Vector3 GetFuturePositionOfTarget(IBoid targetBoid)
         {
-            var distance = targetBoid.Position - Host.Position;
+            var distance = targetBoid.Position - this.Host.Position;
 
             // T = updated ahead
-            var T = distance.Length() / Host.GetMaxVelocity();
+            var T = distance.Length() / this.Host.GetMaxVelocity();
 
             return targetBoid.Position + targetBoid.Velocity * T;
         }
