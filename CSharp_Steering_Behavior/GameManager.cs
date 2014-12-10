@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 using CSharp_Steering_Behavior.Primitives;
 using Lillheaton.Monogame.Steering;
 using Microsoft.Xna.Framework;
@@ -12,7 +14,8 @@ namespace CSharp_Steering_Behavior
         private GraphicsDevice _graphics;
         private GraphicsDeviceManager _graphicsDevice;
         private Triangle[] _playerTriangles;
-        private IDrawableObstacle[] _obstacles;
+        private IObstacle[] _obstacles;
+        private DrawableRectangle _drawableRectangle;
 
         public GameManager(GraphicsDeviceManager graphicsDevice, GraphicsDevice graphics)
         {
@@ -39,11 +42,15 @@ namespace CSharp_Steering_Behavior
                             0));
             }
 
-            _obstacles = new IDrawableObstacle[2];
+            _drawableRectangle = new DrawableRectangle(_graphics, new Rectangle(300, 200, 50, 50));
+
+            _obstacles = new IObstacle[3];
             _obstacles[0] = new CircleObstacle(new Vector3(100, 100, 0), 20);
             _obstacles[1] = new CircleObstacle(new Vector3(200, 200, 0), 50);
-
+            _obstacles[2] = _drawableRectangle;
+            
             _playerTriangles[0].Obstacles = _obstacles;
+
         }
 
         public void UpdateKeyboardInput()
@@ -107,6 +114,11 @@ namespace CSharp_Steering_Behavior
 
         public void Draw(SpriteBatch spriteBatch, PrimitiveBatch primitiveBatch)
         {
+            // Draw Rectangle
+            spriteBatch.Begin();
+            _drawableRectangle.Draw(spriteBatch);
+            spriteBatch.End();
+
             // Draw Triangles
             primitiveBatch.Begin(PrimitiveType.TriangleList);
             foreach (var triangle in _playerTriangles)
@@ -125,7 +137,7 @@ namespace CSharp_Steering_Behavior
 
             // Draw circles
             primitiveBatch.Begin(PrimitiveType.LineStrip);
-            foreach (var obstacle in _obstacles)
+            foreach (var obstacle in _obstacles.OfType<IDrawableObstacle>())
             {
                 obstacle.Draw(primitiveBatch);
             }

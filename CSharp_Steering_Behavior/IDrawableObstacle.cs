@@ -2,7 +2,7 @@
 
 namespace CSharp_Steering_Behavior
 {
-    public interface IDrawableObstacle : IObstacle
+    public interface IDrawableObstacle : ICircleObstacle
     {
         void Draw(PrimitiveBatch primitiveBatch);
     }

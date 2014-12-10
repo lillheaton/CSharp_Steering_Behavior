@@ -4,7 +4,6 @@ namespace Lillheaton.Monogame.Steering
 {
     public interface IObstacle
     {
-        Vector3 Position { get; set; }
-        float GetRadius();
+        Vector3 Center { get; set; }
     }
 }

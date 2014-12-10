@@ -22,7 +22,7 @@ namespace Lillheaton.Monogame.Steering
         private const int CircleDistance = 6;
         private const int CircleRadius = 8;
         private const int AngleChange = 1;
-        private const float MaxAvoidanceForce = 3;
+        private const float MaxAvoidanceForce = 6;
 
         public SteeringBehavior(IBoid host)
         {
@@ -39,7 +39,10 @@ namespace Lillheaton.Monogame.Steering
 
         public void Seek(Vector3 target)
         {
-            this.Steering = Vector3.Add(this.Steering, this.DoSeek(target));
+            if (target != this.Host.Position)
+            {
+                this.Steering = Vector3.Add(this.Steering, this.DoSeek(target));   
+            }
         }
 
         public void Flee(Vector3 target)
@@ -139,8 +142,8 @@ namespace Lillheaton.Monogame.Steering
 
             if (threat != null)
             {
-                avoidanceForce.X = ahead.X - threat.Position.X;
-                avoidanceForce.Y = ahead.Y - threat.Position.Y;
+                avoidanceForce.X = ahead.X - threat.Center.X;
+                avoidanceForce.Y = ahead.Y - threat.Center.Y;
 
                 avoidanceForce = Vector3.Normalize(avoidanceForce);
                 avoidanceForce = avoidanceForce.ScaleBy(MaxAvoidanceForce);
@@ -166,7 +169,7 @@ namespace Lillheaton.Monogame.Steering
 
             if (Vector3.Distance(this.Host.Position, target) <= 10)
             {
-                if (this._currentNodePath < nodes.Count)
+                if (this._currentNodePath < nodes.Count - 1)
                 {
                     this._currentNodePath++;
                 }
@@ -181,7 +184,18 @@ namespace Lillheaton.Monogame.Steering
 
             foreach (var obstacle in obstacles)
             {
-                if (this.LineIntersectsCircle(ahead, obstacle) && (mostThreating == null || Vector3.Distance(this.Host.Position, obstacle.Position) < Vector3.Distance(this.Host.Position, mostThreating.Position)))
+                bool collision = false;
+                if (obstacle is ICircleObstacle)
+                {
+                    collision = this.LineIntersectsCircle(ahead, obstacle as ICircleObstacle);
+                }
+
+                if (obstacle is IRectangleObstacle)
+                {
+                    collision = this.LineIntersectsRectangle(ahead, obstacle as IRectangleObstacle);
+                }
+
+                if (collision && (mostThreating == null || Vector3.Distance(this.Host.Position, obstacle.Center) < Vector3.Distance(this.Host.Position, mostThreating.Center)))
                 {
                     mostThreating = obstacle;
                 }
@@ -190,16 +204,32 @@ namespace Lillheaton.Monogame.Steering
             return mostThreating;
         }
 
-        private bool LineIntersectsCircle(Vector3 ahead, IObstacle obstacle)
+        private bool LineIntersectsCircle(Vector3 ahead, ICircleObstacle obstacle)
         {
             var tv = Vector3.Normalize(this.Host.Velocity);
             tv = tv.ScaleBy(MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
 
             var ahead2 = Vector3.Add(this.Host.Position, tv);
 
-            return Vector3.Distance(obstacle.Position, ahead) <= obstacle.GetRadius()
-                   || Vector3.Distance(obstacle.Position, ahead2) <= obstacle.GetRadius()
-                   || Vector3.Distance(obstacle.Position, this.Host.Position) <= obstacle.GetRadius();
+            return Vector3.Distance(obstacle.Center, ahead) <= obstacle.GetRadius()
+                   || Vector3.Distance(obstacle.Center, ahead2) <= obstacle.GetRadius()
+                   || Vector3.Distance(obstacle.Center, this.Host.Position) <= obstacle.GetRadius();
+        }
+
+        private bool LineIntersectsRectangle(Vector3 ahead, IRectangleObstacle obstacle)
+        {
+            var tv = Vector3.Normalize(this.Host.Velocity);
+            tv = tv.ScaleBy(MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
+
+            var ahead2 = Vector3.Add(this.Host.Position, tv);
+
+            return this.IsInsideRectangle(ahead, obstacle) || this.IsInsideRectangle(ahead2, obstacle)
+                   || this.IsInsideRectangle(this.Host.Position, obstacle);
+        }
+
+        private bool IsInsideRectangle(Vector3 position, IRectangleObstacle obstacle)
+        {
+            return obstacle.Rectangle.Contains(new Vector2(position.X, position.Y));
         }
 
         private Vector3 GetFuturePositionOfTarget(IBoid targetBoid)
