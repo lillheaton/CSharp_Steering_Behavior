@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Lillheaton.Monogame.Steering.Behaviours;
+
+using Microsoft.Xna.Framework;
 
 namespace Lillheaton.Monogame.Steering
 {
