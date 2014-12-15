@@ -12,17 +12,18 @@ namespace Lillheaton.Monogame.Steering
 
         public Vector3 DesiredVelocity { get; private set; }
 
+        private Vector3 _avoidanceForce;
         private int _currentNodePath = 0;
         private Random random;
         private float _wanderAngle = 0;
 
         private const int MaxSeeAhead = 100;
-        private const float MaxForce = 5.4f;
+        private const float MaxForce = 0.6f;
         private const int SlowingRadius = 100;
         private const int CircleDistance = 6;
         private const int CircleRadius = 8;
         private const int AngleChange = 1;
-        private const float MaxAvoidanceForce = 6;
+        private const float MaxAvoidanceForce = 350;
 
         public SteeringBehavior(IBoid host)
         {
@@ -33,6 +34,7 @@ namespace Lillheaton.Monogame.Steering
         private void Init()
         {
             this.Angle = 0;
+            this._avoidanceForce = new Vector3(0, 0, 0);
             this.random = new Random(DateTime.Now.Millisecond);
             this.Host.Velocity = this.Host.Velocity.Truncate(this.Host.GetMaxVelocity());
         }
@@ -77,15 +79,15 @@ namespace Lillheaton.Monogame.Steering
 
         public void Update(GameTime gameTime)
         {
-            this.Steering.Truncate(MaxForce);
+            this.Steering = this.Steering.Truncate(MaxForce);
             this.Steering = this.Steering.ScaleBy((float)1 / this.Host.GetMass());
 
-            this.Host.Velocity = this.Host.Velocity + this.Steering;
+            this.Host.Velocity = Vector3.Add(this.Host.Velocity, this.Steering);
             this.Host.Velocity = this.Host.Velocity.Truncate(this.Host.GetMaxVelocity());
 
             this.Angle = this.GetAngle(this.Host.Velocity);
 
-            this.Host.Position = this.Host.Position + this.Host.Velocity;
+            this.Host.Position = Vector3.Add(this.Host.Position, this.Host.Velocity);
         }
 
 
@@ -138,23 +140,22 @@ namespace Lillheaton.Monogame.Steering
             var ahead = Vector3.Add(this.Host.Position, tv);
 
             var threat = this.MostThreatingObstacle(ahead, objectsToAvoid);
-            var avoidanceForce = new Vector3();
 
             if (threat != null)
             {
-                avoidanceForce.X = ahead.X - threat.Center.X;
-                avoidanceForce.Y = ahead.Y - threat.Center.Y;
+                _avoidanceForce.X = ahead.X - threat.Center.X;
+                _avoidanceForce.Y = ahead.Y - threat.Center.Y;
 
-                avoidanceForce = Vector3.Normalize(avoidanceForce);
-                avoidanceForce = avoidanceForce.ScaleBy(MaxAvoidanceForce);
+                _avoidanceForce = Vector3.Normalize(_avoidanceForce);
+                _avoidanceForce = _avoidanceForce.ScaleBy(MaxAvoidanceForce);
             }
             else
             {
                 // nullify the avoidance force
-                avoidanceForce = avoidanceForce.ScaleBy(0);
+                _avoidanceForce = _avoidanceForce.ScaleBy(0);
             }
 
-            return avoidanceForce;
+            return _avoidanceForce;
         }
 
         private Vector3 DoFollowPath(Path path)

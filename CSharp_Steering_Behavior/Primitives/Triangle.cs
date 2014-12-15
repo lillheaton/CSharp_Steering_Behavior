@@ -109,7 +109,7 @@ namespace CSharp_Steering_Behavior.Primitives
 
         public float GetMaxVelocity()
         {
-            return 3;
+            return 3f;
         }
 
         public float GetMass()
