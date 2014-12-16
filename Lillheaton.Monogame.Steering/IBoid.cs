@@ -6,7 +6,7 @@ namespace Lillheaton.Monogame.Steering
 {
     public interface IBoid
     {
-        SteeringBehavior SteeringBehavior { get; set; }
+        SteeringBehavior SteeringBehavior { get; }
         Vector3 Position { get; set; }
         Vector3 Velocity { get; set; }
 

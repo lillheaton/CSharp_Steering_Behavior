@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
-
-using CSharp_Steering_Behavior.Primitives;
+﻿using CSharp_Steering_Behavior.Primitives;
+using CSharp_Steering_Behavior.Units;
 using Lillheaton.Monogame.Steering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Linq;
 
 namespace CSharp_Steering_Behavior
 {
@@ -13,9 +13,11 @@ namespace CSharp_Steering_Behavior
     {
         private GraphicsDevice _graphics;
         private GraphicsDeviceManager _graphicsDevice;
-        private Triangle[] _playerTriangles;
         private IObstacle[] _obstacles;
         private DrawableRectangle _drawableRectangle;
+
+        private Leader _leader;
+        private Follower[] _followers;
 
         public GameManager(GraphicsDeviceManager graphicsDevice, GraphicsDevice graphics)
         {
@@ -27,57 +29,37 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
-            const int NumberOfTriangles = 1;
-
-            _playerTriangles = new Triangle[NumberOfTriangles];
-            var random = new Random();
-
-            for (int i = 0; i < NumberOfTriangles; i++)
-            {
-                this._playerTriangles[i] =
-                    new Triangle(
-                        new Vector3(
-                            random.Next(0, _graphicsDevice.PreferredBackBufferWidth),
-                            random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
-                            0));
-            }
-
+            // Generate obsticals
             _drawableRectangle = new DrawableRectangle(_graphics, new Rectangle(300, 200, 50, 50));
 
             _obstacles = new IObstacle[3];
             _obstacles[0] = new CircleObstacle(new Vector3(100, 100, 0), 20);
             _obstacles[1] = new CircleObstacle(new Vector3(200, 200, 0), 50);
             _obstacles[2] = _drawableRectangle;
+
+            // Create units
+            var random = new Random(DateTime.Now.Millisecond);
             
-            _playerTriangles[0].Obstacles = _obstacles;
+            // Create the leader
+            _leader =
+                new Leader(
+                    new Vector3(
+                        random.Next(0, _graphicsDevice.PreferredBackBufferWidth),
+                        random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
+                        0));
 
-        }
+            _followers = new Follower[4];
 
-        public void UpdateKeyboardInput()
-        {
-            KeyboardState keyState = Keyboard.GetState();
-            GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
-            float epsilon = 0.1f;
-
-            if (keyState.IsKeyDown(Keys.Left) || gamePad.ThumbSticks.Left.X < -epsilon)
+            for (int i = 0; i < _followers.Length; i++)
             {
-                //_playerTriangle.Rotate(_playerTriangle.CurrentAngle + 2);
-            }
+                this._followers[i] =
+                    new Follower(
+                        new Vector3(
+                            random.Next(0, _graphicsDevice.PreferredBackBufferWidth),
+                            random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
+                            0));
 
-            if (keyState.IsKeyDown(Keys.Right) || gamePad.ThumbSticks.Left.X > epsilon)
-            {
-                //_playerTriangle.Rotate(_playerTriangle.CurrentAngle - 2);
-                //_playerTriangle.Move(Direction.East);
-            }
-
-            if (keyState.IsKeyDown(Keys.Down) || gamePad.ThumbSticks.Left.Y < -epsilon)
-            {
-                //_playerTriangle.Move(Direction.South);
-            }
-
-            if (keyState.IsKeyDown(Keys.Up) || gamePad.ThumbSticks.Left.Y > epsilon)
-            {
-                //_playerTriangle.Move();
+                this._followers[i].Leader = _leader;
             }
         }
 
@@ -86,29 +68,17 @@ namespace CSharp_Steering_Behavior
             var mouse = Mouse.GetState();
             var mosueVector = new Vector3(mouse.X, mouse.Y, 0);
 
-            //foreach (var triangle in _playerTriangles)
-            //{
-            //    triangle.MoveTwoardsTarget(mosueVector, triangle.Steering.Wander);    
-            //}
-
-            _playerTriangles[0].MoveTwoardsTarget(mosueVector);
-
-            //for (int i = 1; i < 5; i++)
-            //{
-            //    _playerTriangles[i].MoveTwoardsTarget(mosueVector);
-            //    _playerTriangles[i].Evade(_playerTriangles[0]);
-            //}
-            
+            _leader.MoveTwoardsTarget(mosueVector);
         }
 
         public void Update(GameTime gameTime)
         {
-            UpdateKeyboardInput();
             UpdateMouseInput();
 
-            foreach (var triangle in _playerTriangles)
+            _leader.Update(gameTime);
+            foreach (var unit in _followers)
             {
-                triangle.Update(gameTime);
+                unit.Update(gameTime);
             }
         }
 
@@ -119,22 +89,13 @@ namespace CSharp_Steering_Behavior
             _drawableRectangle.Draw(spriteBatch);
             spriteBatch.End();
 
-            // Draw Triangles
-            primitiveBatch.Begin(PrimitiveType.TriangleList);
-            foreach (var triangle in _playerTriangles)
+            // Draw Units
+            _leader.Draw(primitiveBatch);
+            foreach (var unit in _followers)
             {
-                triangle.Draw(primitiveBatch);
+                unit.Draw(primitiveBatch);
             }
-            primitiveBatch.End();
-
-            // Draw lines
-            primitiveBatch.Begin(PrimitiveType.LineList);
-            foreach (var triangle in _playerTriangles)
-            {
-                triangle.DrawForces(primitiveBatch);
-            }
-            primitiveBatch.End();
-
+            
             // Draw circles
             primitiveBatch.Begin(PrimitiveType.LineStrip);
             foreach (var obstacle in _obstacles.OfType<IDrawableObstacle>())
