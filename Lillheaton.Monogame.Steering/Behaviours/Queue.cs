@@ -13,10 +13,10 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
         public void Queue(List<IBoid> worldBoids)
         {
-            Steering = Vector3.Add(Steering, this.DoQueu(worldBoids));
+            Steering = Vector3.Add(Steering, this.DoQueue(worldBoids));
         }
 
-        private Vector3 DoQueu(List<IBoid> worldBoids)
+        private Vector3 DoQueue(List<IBoid> worldBoids)
         {
             var neighbor = this.GetNeighborAhead(worldBoids);
             var brake = new Vector3();
