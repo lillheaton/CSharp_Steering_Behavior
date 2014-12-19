@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharp_Steering_Behavior
@@ -14,10 +15,12 @@ namespace CSharp_Steering_Behavior
         private GraphicsDevice _graphics;
         private GraphicsDeviceManager _graphicsDevice;
         private IObstacle[] _obstacles;
-        private DrawableRectangle _drawableRectangle;
 
-        private Leader _leader;
-        private Follower[] _followers;
+        private DrawableRectangle _leftRectangle;
+        private DrawableRectangle _rightRectangle;
+
+        private List<IBoid> _boids;
+        private Random _random;
 
         public GameManager(GraphicsDeviceManager graphicsDevice, GraphicsDevice graphics)
         {
@@ -29,37 +32,36 @@ namespace CSharp_Steering_Behavior
 
         public void Initialize()
         {
-            // Generate obsticals
-            _drawableRectangle = new DrawableRectangle(_graphics, new Rectangle(300, 200, 50, 50));
+            _boids = new List<IBoid>();
 
-            _obstacles = new IObstacle[3];
-            _obstacles[0] = new CircleObstacle(new Vector3(100, 100, 0), 20);
-            _obstacles[1] = new CircleObstacle(new Vector3(200, 200, 0), 50);
-            _obstacles[2] = _drawableRectangle;
+            // Generate obsticals
+            this._leftRectangle = new DrawableRectangle(_graphics, new Rectangle(0, 20, 350, 70));
+            this._rightRectangle = new DrawableRectangle(_graphics, new Rectangle(_graphicsDevice.PreferredBackBufferWidth - 350, 20, 500, 70));
+
+            _obstacles = new IObstacle[2];
+            _obstacles[0] = this._leftRectangle;
+            _obstacles[1] = this._rightRectangle;
 
             // Create units
-            var random = new Random(DateTime.Now.Millisecond);
-            
-            // Create the leader
-            _leader =
-                new Leader(
-                    new Vector3(
-                        random.Next(0, _graphicsDevice.PreferredBackBufferWidth),
-                        random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
-                        0));
+            _random = new Random(DateTime.Now.Millisecond);
 
-            _followers = new Follower[4];
-
-            for (int i = 0; i < _followers.Length; i++)
+            for (int i = 0; i < 50; i++)
             {
-                this._followers[i] =
-                    new Follower(
+                var seeker =
+                    new Seeker(
                         new Vector3(
-                            random.Next(0, _graphicsDevice.PreferredBackBufferWidth),
-                            random.Next(0, _graphicsDevice.PreferredBackBufferHeight),
+                            _random.Next(-40, _graphicsDevice.PreferredBackBufferWidth + 40),
+                            (float)(this._graphicsDevice.PreferredBackBufferHeight + _random.NextDouble() * 200),
                             0));
 
-                this._followers[i].Leader = _leader;
+                seeker.Target = new Vector3((float)_graphicsDevice.PreferredBackBufferWidth / 2, -10, 0);
+                seeker.Obstacles = _obstacles;
+                _boids.Add(seeker);
+            }
+
+            foreach (var boid in _boids.OfType<BaseUnit>())
+            {
+                boid.WorldBoids = _boids;
             }
         }
 
@@ -68,17 +70,25 @@ namespace CSharp_Steering_Behavior
             var mouse = Mouse.GetState();
             var mosueVector = new Vector3(mouse.X, mouse.Y, 0);
 
-            _leader.MoveTwoardsTarget(mosueVector);
+            //_leader.MoveTwoardsTarget(mosueVector);
         }
 
         public void Update(GameTime gameTime)
         {
             UpdateMouseInput();
 
-            _leader.Update(gameTime);
-            foreach (var unit in _followers)
+            foreach (var unit in _boids)
             {
                 unit.Update(gameTime);
+
+                if (unit.Position.Y <= -5)
+                {
+                    unit.Position =
+                        new Vector3(
+                            (float)(this._graphicsDevice.PreferredBackBufferWidth * this._random.NextDouble()),
+                            _graphicsDevice.PreferredBackBufferHeight * 1.2f,
+                            0);
+                }
             }
         }
 
@@ -86,23 +96,23 @@ namespace CSharp_Steering_Behavior
         {
             // Draw Rectangle
             spriteBatch.Begin();
-            _drawableRectangle.Draw(spriteBatch);
+            this._leftRectangle.Draw(spriteBatch);
+            this._rightRectangle.Draw(spriteBatch);
             spriteBatch.End();
 
             // Draw Units
-            _leader.Draw(primitiveBatch);
-            foreach (var unit in _followers)
+            foreach (var unit in _boids.OfType<Seeker>())
             {
                 unit.Draw(primitiveBatch);
             }
             
             // Draw circles
-            primitiveBatch.Begin(PrimitiveType.LineStrip);
-            foreach (var obstacle in _obstacles.OfType<IDrawableObstacle>())
-            {
-                obstacle.Draw(primitiveBatch);
-            }
-            primitiveBatch.End();
+            //primitiveBatch.Begin(PrimitiveType.LineStrip);
+            //foreach (var obstacle in _obstacles.OfType<IDrawableObstacle>())
+            //{
+            //    obstacle.Draw(primitiveBatch);
+            //}
+            //primitiveBatch.End();
         }
     }
 }

@@ -1,6 +1,9 @@
-﻿using Lillheaton.Monogame.Steering.Extensions;
+﻿using System.Linq;
+
+using Lillheaton.Monogame.Steering.Extensions;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace Lillheaton.Monogame.Steering.Behaviours
 {
@@ -9,16 +12,19 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         public IBoid Host { get; private set; }
         public Vector3 Steering { get; private set; }
         public Vector3 DesiredVelocity { get; private set; }
-        public float Angle { get; private set; }
+        public float Angle { get; private set; }       
 
         private Random random;
-        private const int MaxSeeAhead = 100;
-        private const float MaxForce = 0.6f;
+        private const int MaxSeeAhead = 50;
+        private const float MaxForce = 5.4f;
         private const int SlowingRadius = 100;
         private const int CircleDistance = 6;
         private const int CircleRadius = 8;
         private const int AngleChange = 1;
-        private const float MaxAvoidanceForce = 350;
+        private const float MaxAvoidanceForce = 600;
+
+        private const int SeparationRadius = 30;
+        private const float SeparationForce = 2.0f;
 
         public SteeringBehavior(IBoid host)
         {
@@ -46,6 +52,33 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             this.Host.Position = Vector3.Add(this.Host.Position, this.Host.Velocity);
         }
 
+        private Vector3 Separation(List<IBoid> worldBoids)
+        {
+            var force = new Vector3();
+            var neighbors = 0;
+
+            foreach (var boid in worldBoids.Except(new[] { this.Host }))
+            {
+                if (Vector3.Distance(boid.Position, this.Host.Position) <= SeparationRadius)
+                {
+                    force.X += boid.Position.X - this.Host.Position.X;
+                    force.Y += boid.Position.Y - this.Host.Position.Y;
+                    neighbors++;
+                }
+            }
+
+            if (neighbors > 0)
+            {
+                force.X /= neighbors;
+                force.Y /= neighbors;
+
+                force = force.ScaleBy(-1);
+                force = Vector3.Normalize(force);
+                force = force.ScaleBy(SeparationForce);
+            }
+
+            return force;
+        }
 
         private Vector3 GetFuturePositionOfTarget(IBoid targetBoid)
         {

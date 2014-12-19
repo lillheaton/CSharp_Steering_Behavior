@@ -4,19 +4,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace CSharp_Steering_Behavior.Units
 {
-    public class Follower : BaseUnit
+    public class Seeker : BaseUnit
     {
         private Triangle _triangle;
-        public Leader Leader { get; set; }
+        public Vector3 Target { get; set; }
 
-        public Follower(Vector3 position) : base(position)
+        public Seeker(Vector3 position) : base(position)
         {
             _triangle = new Triangle();
+            Target = new Vector3();
         }
 
         public override void Update(GameTime gameTime)
         {
-            SteeringBehavior.FollowLeader(Leader, WorldBoids);
+            SteeringBehavior.Seek(Target);
+            SteeringBehavior.CollisionAvoidance(Obstacles);
+            SteeringBehavior.Queue(WorldBoids);
 
             // Calculate Steering
             base.Update(gameTime);
@@ -31,9 +34,9 @@ namespace CSharp_Steering_Behavior.Units
             _triangle.Draw(primitiveBatch);
             primitiveBatch.End();
 
-            primitiveBatch.Begin(PrimitiveType.LineList);
-            this.DrawForces(primitiveBatch);
-            primitiveBatch.End();
+            //primitiveBatch.Begin(PrimitiveType.LineList);
+            //this.DrawForces(primitiveBatch);
+            //primitiveBatch.End();
         }
     }
 }

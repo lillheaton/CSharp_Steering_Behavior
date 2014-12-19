@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+
+using Lillheaton.Monogame.Steering.Extensions;
+using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace Lillheaton.Monogame.Steering.Behaviours
 {
@@ -7,20 +11,51 @@ namespace Lillheaton.Monogame.Steering.Behaviours
     /// </summary>
     public partial class SteeringBehavior
     {
-        private const int LeaderBehindDistance = 100;
+        private const int LeaderBehindDistance = 50;
+        private const int LeaderSightRadius = 30;
 
-        public void FollowLeader(IBoid leader)
+        public void FollowLeader(IBoid leader, List<IBoid> worldBoids = null)
         {
-            Steering = Vector3.Add(Steering, this.DoSeek(this.DoFollowLeader(leader)));
+            Steering = Vector3.Add(Steering, this.DoFollowLeader(leader, worldBoids));
         }
 
-        private Vector3 DoFollowLeader(IBoid leader)
+        private Vector3 DoFollowLeader(IBoid leader, List<IBoid> worldBoids = null)
         {
-            var tv = leader.Velocity * -1;
-            tv = Vector3.Normalize(tv) * LeaderBehindDistance;
+            // Ahead vector
+            var tv = Vector3.Normalize(leader.Velocity);
+            tv = tv.ScaleBy(LeaderBehindDistance);
+            var ahead = Vector3.Add(leader.Position, tv);
+
+            // Behind vector
+            tv = tv.ScaleBy(-1);
             var behind = Vector3.Add(leader.Position, tv);
 
-            return behind;
+            var force = new Vector3(0, 0, 0);
+
+            // If the character is on the leader's sight, add a force
+            // to evade the route immediately.
+            if (this.IsOnleaderSight(leader, ahead))
+            {
+                force = Vector3.Add(force, this.DoFlee(this.GetFuturePositionOfTarget(leader)));
+                force = force.ScaleBy(1.8f);
+            }
+
+            // Creates a force to arrive at the behind point
+            force = Vector3.Add(force, this.DoSeek(behind));
+
+            if (worldBoids != null)
+            {
+                // Add separation force
+                force = Vector3.Add(force, this.Separation(worldBoids));    
+            }
+
+            return force;
+        }
+
+        private bool IsOnleaderSight(IBoid leader, Vector3 leaderAhead)
+        {
+            return Vector3.Distance(leaderAhead, this.Host.Position) <= LeaderSightRadius
+                   || Vector3.Distance(leader.Position, this.Host.Position) <= LeaderSightRadius;
         }
     }
 }

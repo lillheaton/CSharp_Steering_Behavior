@@ -49,6 +49,9 @@
     <Compile Include="Behaviours\Flee.cs" />
     <Compile Include="Behaviours\FollowPath.cs" />
     <Compile Include="Behaviours\Pursuit.cs" />
+    <Compile Include="Behaviours\Queue.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="Behaviours\Seek.cs" />
     <Compile Include="Behaviours\Wander.cs" />
     <Compile Include="Extensions\VectorExtensions.cs" />

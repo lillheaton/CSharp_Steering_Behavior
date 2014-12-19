@@ -3,6 +3,7 @@ using Lillheaton.Monogame.Steering.Behaviours;
 using Lillheaton.Monogame.Steering.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace CSharp_Steering_Behavior.Units
 {
@@ -12,6 +13,7 @@ namespace CSharp_Steering_Behavior.Units
         public Vector3 Position { get; set; }
         public Vector3 Velocity { get; set; }
         public IObstacle[] Obstacles { get; set; }
+        public List<IBoid> WorldBoids { get; set; } 
 
         private VertexPositionColor[] _forces;
 

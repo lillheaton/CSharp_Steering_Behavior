@@ -47,6 +47,7 @@
     <Compile Include="Units\BaseUnit.cs" />
     <Compile Include="Units\Follower.cs" />
     <Compile Include="Units\Leader.cs" />
+    <Compile Include="Units\Seeker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK">
