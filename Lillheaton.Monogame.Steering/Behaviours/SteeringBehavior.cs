@@ -21,7 +21,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         private const int CircleDistance = 6;
         private const int CircleRadius = 8;
         private const int AngleChange = 1;
-        private const float MaxAvoidanceForce = 600;
+        private const float MaxAvoidanceForce = 100;
 
         private const int SeparationRadius = 30;
         private const float SeparationForce = 2.0f;

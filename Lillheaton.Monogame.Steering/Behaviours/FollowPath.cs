@@ -9,7 +9,14 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
         public void FollowPath(Path path)
         {
-            this.Seek(this.DoFollowPath(path));
+            if (path.Get().Count - 1 == _currentNodePath)
+            {
+                this.Arrive(this.DoFollowPath(path));
+            }
+            else
+            {
+                this.Seek(this.DoFollowPath(path));
+            }
         }
 
         private Vector3 DoFollowPath(Path path)

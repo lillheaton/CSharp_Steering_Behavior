@@ -9,7 +9,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         /// <param name="targetBoid"></param>
         public void Pursuit(IBoid targetBoid)
         {
-            this.Seek(this.GetFuturePositionOfTarget(targetBoid));
+            this.Arrive(this.GetFuturePositionOfTarget(targetBoid));
         }
     }
 }

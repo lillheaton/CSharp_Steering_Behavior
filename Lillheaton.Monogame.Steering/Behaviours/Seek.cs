@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace Lillheaton.Monogame.Steering.Behaviours
 {
@@ -20,20 +19,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         private Vector3 DoSeek(Vector3 target)
         {
             this.DesiredVelocity = target - this.Host.Position;
-
-            float distance = this.DesiredVelocity.Length();
-
-            // Inside slowing radius
-            if (distance <= SlowingRadius)
-            {
-                this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity() * (distance / SlowingRadius);
-            }
-            else
-            {
-                // Far away
-                this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity();
-            }
-
+            this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity();
             return this.DesiredVelocity - this.Host.Velocity;
         }
     }
