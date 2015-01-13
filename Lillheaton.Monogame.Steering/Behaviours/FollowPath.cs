@@ -19,6 +19,11 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             }
         }
 
+        public void ResetPath()
+        {
+            _currentNodePath = 0;
+        }
+
         private Vector3 DoFollowPath(Path path)
         {
             if (path == null)

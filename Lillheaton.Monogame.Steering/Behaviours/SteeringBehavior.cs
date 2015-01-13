@@ -12,24 +12,16 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         public IBoid Host { get; private set; }
         public Vector3 Steering { get; private set; }
         public Vector3 DesiredVelocity { get; private set; }
-        public float Angle { get; private set; }       
+        public float Angle { get; private set; }
+        public Settings Settings { get; private set; }
 
         private Random random;
-        private const int MaxSeeAhead = 50;
-        private const float MaxForce = 5.4f;
-        private const int SlowingRadius = 100;
-        private const int CircleDistance = 6;
-        private const int CircleRadius = 8;
-        private const int AngleChange = 1;
-        private const float MaxAvoidanceForce = 100;
 
-        private const int SeparationRadius = 30;
-        private const float SeparationForce = 2.0f;
-
-        public SteeringBehavior(IBoid host)
+        public SteeringBehavior(IBoid host, Settings settings = null)
         {
             this.Host = host;
-            this.Init();
+            this.Settings = settings;
+            this.Init();            
         }
 
         private void Init()
@@ -37,11 +29,15 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             this.Angle = 0;
             this.random = new Random(DateTime.Now.Millisecond);
             this.Host.Velocity = this.Host.Velocity.Truncate(this.Host.GetMaxVelocity());
+            if (this.Settings == null)
+            {
+                this.Settings = new Settings();
+            }
         }
 
         public void Update(GameTime gameTime)
         {
-            this.Steering = this.Steering.Truncate(MaxForce);
+            this.Steering = this.Steering.Truncate(Settings.MaxForce);
             this.Steering = this.Steering.ScaleBy((float)1 / this.Host.GetMass());
 
             this.Host.Velocity = Vector3.Add(this.Host.Velocity, this.Steering);
@@ -59,7 +55,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
             foreach (var boid in worldBoids.Except(new[] { this.Host }))
             {
-                if (Vector3.Distance(boid.Position, this.Host.Position) <= SeparationRadius)
+                if (Vector3.Distance(boid.Position, this.Host.Position) <= Settings.SeparationRadius)
                 {
                     force.X += boid.Position.X - this.Host.Position.X;
                     force.Y += boid.Position.Y - this.Host.Position.Y;
@@ -74,7 +70,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
                 force = force.ScaleBy(-1);
                 force = Vector3.Normalize(force);
-                force = force.ScaleBy(SeparationForce);
+                force = force.ScaleBy(Settings.SeparationForce);
             }
 
             return force;

@@ -11,9 +11,6 @@ namespace Lillheaton.Monogame.Steering.Behaviours
     /// </summary>
     public partial class SteeringBehavior
     {
-        private const int LeaderBehindDistance = 50;
-        private const int LeaderSightRadius = 30;
-
         public void FollowLeader(IBoid leader, List<IBoid> worldBoids = null)
         {
             Steering = Vector3.Add(Steering, this.DoFollowLeader(leader, worldBoids));
@@ -23,7 +20,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         {
             // Ahead vector
             var tv = Vector3.Normalize(leader.Velocity);
-            tv = tv.ScaleBy(LeaderBehindDistance);
+            tv = tv.ScaleBy(Settings.LeaderBehindDistance);
             var ahead = Vector3.Add(leader.Position, tv);
 
             // Behind vector
@@ -54,8 +51,8 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
         private bool IsOnleaderSight(IBoid leader, Vector3 leaderAhead)
         {
-            return Vector3.Distance(leaderAhead, this.Host.Position) <= LeaderSightRadius
-                   || Vector3.Distance(leader.Position, this.Host.Position) <= LeaderSightRadius;
+            return Vector3.Distance(leaderAhead, this.Host.Position) <= Settings.LeaderSightRadius
+                   || Vector3.Distance(leader.Position, this.Host.Position) <= Settings.LeaderSightRadius;
         }
     }
 }

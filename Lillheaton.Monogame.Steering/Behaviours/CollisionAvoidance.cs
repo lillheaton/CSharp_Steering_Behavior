@@ -19,7 +19,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         private Vector3 DoCollisionAvoidance(IObstacle[] objectsToAvoid)
         {
             var tv = Vector3.Normalize(this.Host.Velocity);
-            tv = tv.ScaleBy(MaxSeeAhead * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
+            tv = tv.ScaleBy(Settings.MaxSeeAhead * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
 
             // Ahead is the same as the velocity vector except it's longer
             var ahead = Vector3.Add(this.Host.Position, tv);
@@ -32,7 +32,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
                 this._avoidanceForce.Y = ahead.Y - threat.Center.Y;
 
                 this._avoidanceForce = Vector3.Normalize(this._avoidanceForce);
-                this._avoidanceForce = this._avoidanceForce.ScaleBy(MaxAvoidanceForce);
+                this._avoidanceForce = this._avoidanceForce.ScaleBy(Settings.MaxAvoidanceForce);
             }
             else
             {
@@ -72,7 +72,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         private bool LineIntersectsCircle(Vector3 ahead, ICircleObstacle obstacle)
         {
             var tv = Vector3.Normalize(this.Host.Velocity);
-            tv = tv.ScaleBy(MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
+            tv = tv.ScaleBy(Settings.MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
 
             var ahead2 = Vector3.Add(this.Host.Position, tv);
 
@@ -84,7 +84,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         private bool LineIntersectsRectangle(Vector3 ahead, IRectangleObstacle obstacle)
         {
             var tv = Vector3.Normalize(this.Host.Velocity);
-            tv = tv.ScaleBy(MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
+            tv = tv.ScaleBy(Settings.MaxSeeAhead * 0.5f * this.Host.Velocity.Length() / this.Host.GetMaxVelocity());
 
             var ahead2 = Vector3.Add(this.Host.Position, tv);
 

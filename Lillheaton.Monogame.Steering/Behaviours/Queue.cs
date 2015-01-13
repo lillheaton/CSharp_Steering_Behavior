@@ -8,9 +8,6 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 {
     public partial class SteeringBehavior
     {
-        private const int MaxQueueAhead = 30;
-        private const int MaxQueueRadius = 30;
-
         public void Queue(List<IBoid> worldBoids)
         {
             Steering = Vector3.Add(Steering, this.DoQueue(worldBoids));
@@ -29,7 +26,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
                 brake = Vector3.Add(brake, this.Host.Velocity.ScaleBy(-1));
                 brake = Vector3.Add(brake, this.Separation(worldBoids));
 
-                if (Vector3.Distance(this.Host.Position, neighbor.Position) <= MaxQueueRadius)
+                if (Vector3.Distance(this.Host.Position, neighbor.Position) <= Settings.MaxQueueRadius)
                 {
                     this.Host.Velocity = this.Host.Velocity.ScaleBy(0.3f);
                 }
@@ -41,12 +38,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         private IBoid GetNeighborAhead(List<IBoid> worldBoids)
         {
             IBoid neighbor = null;
-            var tv = Vector3.Normalize(this.Host.Velocity).ScaleBy(MaxQueueAhead);
+            var tv = Vector3.Normalize(this.Host.Velocity).ScaleBy(Settings.MaxQueueAhead);
             var ahead = Vector3.Add(this.Host.Position, tv);
 
             foreach (var boid in worldBoids)
             {
-                if (boid != this.Host && Vector3.Distance(ahead, boid.Position) <= MaxQueueAhead)
+                if (boid != this.Host && Vector3.Distance(ahead, boid.Position) <= Settings.MaxQueueAhead)
                 {
                     neighbor = boid;
                 }

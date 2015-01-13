@@ -17,12 +17,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
         private Vector3 DoWander()
         {
-            var circleCenter = Vector3.Normalize(this.Host.Velocity).ScaleBy(CircleDistance);
+            var circleCenter = Vector3.Normalize(this.Host.Velocity).ScaleBy(Settings.CircleDistance);
 
-            var displacement = new Vector3(0, -1, 0).ScaleBy(CircleRadius);
+            var displacement = new Vector3(0, -1, 0).ScaleBy(Settings.CircleRadius);
 
             this.SetAngle(ref displacement, this._wanderAngle);
-            this._wanderAngle += (float)this.random.NextDouble() * AngleChange - AngleChange * 0.5f;
+            this._wanderAngle += (float)this.random.NextDouble() * Settings.AngleChange - Settings.AngleChange * 0.5f;
 
             return circleCenter + displacement;
         }

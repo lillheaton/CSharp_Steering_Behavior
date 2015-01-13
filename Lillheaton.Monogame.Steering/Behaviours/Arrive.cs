@@ -20,9 +20,9 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             float distance = this.DesiredVelocity.Length();
 
             // Inside slowing radius
-            if (distance <= SlowingRadius)
+            if (distance <= Settings.SlowingRadius)
             {
-                this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity() * (distance / SlowingRadius);
+                this.DesiredVelocity = Vector3.Normalize(this.DesiredVelocity) * this.Host.GetMaxVelocity() * (distance / Settings.SlowingRadius);
             }
             else
             {
