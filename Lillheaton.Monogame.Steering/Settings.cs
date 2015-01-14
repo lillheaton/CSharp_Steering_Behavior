@@ -68,6 +68,11 @@ namespace Lillheaton.Monogame.Steering
         /// </summary>
         public int MaxQueueRadius { get; set; }
 
+        /// <summary>
+        /// Used for EnemyAwareness, throw event when enemy is ahead
+        /// </summary>
+        public int EnemyAwarenessAheadDistance { get; set; }
+
         public Settings()
         {
             MaxSeeAhead = 50;
@@ -86,6 +91,8 @@ namespace Lillheaton.Monogame.Steering
 
             MaxQueueAhead = 30;
             MaxQueueRadius = 30;
+
+            EnemyAwarenessAheadDistance = 50;
         }
     }
 }

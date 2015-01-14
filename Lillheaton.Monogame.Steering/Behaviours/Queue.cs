@@ -15,7 +15,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
         private Vector3 DoQueue(List<IBoid> worldBoids)
         {
-            var neighbor = this.GetNeighborAhead(worldBoids);
+            var neighbor = this.GetCloseBoidAhead(worldBoids, Settings.MaxQueueAhead);
             var brake = new Vector3();
 
             if (neighbor != null)
@@ -35,15 +35,15 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             return brake;
         }
 
-        private IBoid GetNeighborAhead(List<IBoid> worldBoids)
+        private IBoid GetCloseBoidAhead(List<IBoid> worldBoids, int aheadDistance)
         {
             IBoid neighbor = null;
-            var tv = Vector3.Normalize(this.Host.Velocity).ScaleBy(Settings.MaxQueueAhead);
+            var tv = Vector3.Normalize(this.Host.Velocity).ScaleBy(aheadDistance);
             var ahead = Vector3.Add(this.Host.Position, tv);
 
             foreach (var boid in worldBoids)
             {
-                if (boid != this.Host && Vector3.Distance(ahead, boid.Position) <= Settings.MaxQueueAhead)
+                if (boid != this.Host && Vector3.Distance(ahead, boid.Position) <= aheadDistance)
                 {
                     neighbor = boid;
                 }

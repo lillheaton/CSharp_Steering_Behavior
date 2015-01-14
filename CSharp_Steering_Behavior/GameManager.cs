@@ -35,29 +35,31 @@ namespace CSharp_Steering_Behavior
             _boids = new List<IBoid>();
 
             // Generate obsticals
-            this._leftRectangle = new DrawableRectangle(_graphics, new Rectangle(0, 20, 350, 70));
-            this._rightRectangle = new DrawableRectangle(_graphics, new Rectangle(_graphicsDevice.PreferredBackBufferWidth - 350, 20, 500, 70));
+            //this._leftRectangle = new DrawableRectangle(_graphics, new Rectangle(0, 20, 350, 70));
+            //this._rightRectangle = new DrawableRectangle(_graphics, new Rectangle(_graphicsDevice.PreferredBackBufferWidth - 350, 20, 500, 70));
 
-            _obstacles = new IObstacle[2];
-            _obstacles[0] = this._leftRectangle;
-            _obstacles[1] = this._rightRectangle;
+            //_obstacles = new IObstacle[2];
+            //_obstacles[0] = this._leftRectangle;
+            //_obstacles[1] = this._rightRectangle;
 
             // Create units
             _random = new Random(DateTime.Now.Millisecond);
 
-            for (int i = 0; i < 50; i++)
-            {
-                var seeker =
-                    new Seeker(
-                        new Vector3(
-                            _random.Next(-40, _graphicsDevice.PreferredBackBufferWidth + 40),
-                            (float)(this._graphicsDevice.PreferredBackBufferHeight + _random.NextDouble() * 200),
-                            0));
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    var seeker =
+            //        new Seeker(
+            //            new Vector3(
+            //                _random.Next(-40, _graphicsDevice.PreferredBackBufferWidth + 40),
+            //                (float)(this._graphicsDevice.PreferredBackBufferHeight + _random.NextDouble() * 200),
+            //                0));
 
-                seeker.Target = new Vector3((float)_graphicsDevice.PreferredBackBufferWidth / 2, -10, 0);
-                seeker.Obstacles = _obstacles;
-                _boids.Add(seeker);
-            }
+            //    seeker.Target = new Vector3((float)_graphicsDevice.PreferredBackBufferWidth / 2, -10, 0);
+            //    seeker.Obstacles = _obstacles;
+            //    _boids.Add(seeker);
+            //}
+
+
 
             foreach (var boid in _boids.OfType<BaseUnit>())
             {

@@ -1,20 +1,25 @@
-﻿using System.Linq;
-
+﻿using Lillheaton.Monogame.Steering.Events;
 using Lillheaton.Monogame.Steering.Extensions;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Lillheaton.Monogame.Steering.Behaviours
 {
     public partial class SteeringBehavior
     {
+        // Public
         public IBoid Host { get; private set; }
         public Vector3 Steering { get; private set; }
         public Vector3 DesiredVelocity { get; private set; }
         public float Angle { get; private set; }
         public Settings Settings { get; private set; }
 
+        // Events
+        public event EventHandler<EnemyEventArgs> EnemyAhead; 
+
+        // Private
         private Random random;
 
         public SteeringBehavior(IBoid host, Settings settings = null)
@@ -46,6 +51,24 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             this.Angle = this.GetAngle(this.Host.Velocity);
 
             this.Host.Position = Vector3.Add(this.Host.Position, this.Host.Velocity);
+        }
+
+        public void EnemyAwareness(List<IBoid> enemies)
+        {
+            var enemy = this.GetCloseBoidAhead(enemies, this.Settings.EnemyAwarenessAheadDistance);
+            if (enemy != null)
+            {
+                this.OnEnemyAhead(enemy);
+            }
+        }
+
+        public virtual void OnEnemyAhead(IBoid enemy)
+        {
+            var handler = EnemyAhead;
+            if (handler != null)
+            {
+                handler(this, new EnemyEventArgs(enemy));
+            }
         }
 
         private Vector3 Separation(List<IBoid> worldBoids)

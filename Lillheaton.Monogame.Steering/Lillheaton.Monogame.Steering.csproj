@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Behaviours\Seek.cs" />
     <Compile Include="Behaviours\Wander.cs" />
+    <Compile Include="Events\EnemyEventArgs.cs" />
     <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="Behaviours\Following.cs" />
     <Compile Include="IBoid.cs" />
