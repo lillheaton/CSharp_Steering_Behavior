@@ -1,4 +1,4 @@
-﻿
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace Lillheaton.Monogame.Steering.Behaviours
@@ -7,9 +7,17 @@ namespace Lillheaton.Monogame.Steering.Behaviours
     {
         public void Arrive(Vector3 target)
         {
-            if (target != this.Host.Position)
+            if (Vector3.Distance(target, this.Host.Position) > 3f)
             {
                 this.Steering = Vector3.Add(this.Steering, this.DoArrive(target));
+            }
+        }
+        public void Arrive(Vector3 target, List<IBoid> boidToSeparateFrom)
+        {
+            if (Vector3.Distance(target, this.Host.Position) > 3f)
+            {
+                this.Steering = this.Steering + (this.DoArrive(target));
+                this.Steering = this.Steering + this.Separation(boidToSeparateFrom);
             }
         }
 
