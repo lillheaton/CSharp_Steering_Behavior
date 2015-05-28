@@ -16,7 +16,7 @@ namespace CSharp_Steering_Behavior.Units
 
         public override void Update(GameTime gameTime)
         {
-            SteeringBehavior.FollowLeader(Leader, WorldBoids);
+            SteeringBehavior.FollowLeader(Leader, WorldBoids.ToArray());
 
             // Calculate Steering
             base.Update(gameTime);

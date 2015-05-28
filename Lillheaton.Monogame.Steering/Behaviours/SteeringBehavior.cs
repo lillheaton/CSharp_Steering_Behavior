@@ -49,17 +49,20 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             this.Host.Position = Vector3.Add(this.Host.Position, this.Host.Velocity);
         }
 
-        private Vector3 Separation(List<IBoid> worldBoids)
+        private Vector3 Separation(IBoid[] worldBoids)
         {
             var force = new Vector3();
             var neighbors = 0;
 
-            foreach (var boid in worldBoids.Except(new[] { this.Host }))
+            for (int i = 0; i < worldBoids.Length; i++)
             {
-                if (Vector3.Distance(boid.Position, this.Host.Position) <= Settings.SeparationRadius)
+                if(worldBoids[i] == this.Host)
+                    continue;
+
+                if (Vector3.Distance(worldBoids[i].Position, this.Host.Position) <= Settings.SeparationRadius)
                 {
-                    force.X += boid.Position.X - this.Host.Position.X;
-                    force.Y += boid.Position.Y - this.Host.Position.Y;
+                    force.X += worldBoids[i].Position.X - this.Host.Position.X;
+                    force.Y += worldBoids[i].Position.Y - this.Host.Position.Y;
                     neighbors++;
                 }
             }

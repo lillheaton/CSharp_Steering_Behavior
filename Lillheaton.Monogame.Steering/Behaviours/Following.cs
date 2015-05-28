@@ -11,12 +11,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
     /// </summary>
     public partial class SteeringBehavior
     {
-        public void FollowLeader(IBoid leader, List<IBoid> worldBoids = null)
+        public void FollowLeader(IBoid leader, IBoid[] worldBoids = null)
         {
             Steering = Vector3.Add(Steering, this.DoFollowLeader(leader, worldBoids));
         }
 
-        private Vector3 DoFollowLeader(IBoid leader, List<IBoid> worldBoids = null)
+        private Vector3 DoFollowLeader(IBoid leader, IBoid[] worldBoids = null)
         {
             // Ahead vector
             var tv = Vector3.Normalize(leader.Velocity);

@@ -19,7 +19,7 @@ namespace CSharp_Steering_Behavior.Units
         {
             SteeringBehavior.Seek(Target);
             SteeringBehavior.CollisionAvoidance(Obstacles);
-            SteeringBehavior.Queue(WorldBoids);
+            SteeringBehavior.Queue(WorldBoids.ToArray());
 
             // Calculate Steering
             base.Update(gameTime);

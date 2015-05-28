@@ -8,12 +8,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 {
     public partial class SteeringBehavior
     {
-        public void Queue(List<IBoid> worldBoids)
+        public void Queue(IBoid[] worldBoids)
         {
             Steering = Vector3.Add(Steering, this.DoQueue(worldBoids));
         }
 
-        private Vector3 DoQueue(List<IBoid> worldBoids)
+        private Vector3 DoQueue(IBoid[] worldBoids)
         {
             var neighbor = this.GetCloseBoidAhead(worldBoids, Settings.MaxQueueAhead);
             var brake = new Vector3();
@@ -35,20 +35,20 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             return brake;
         }
 
-        private IBoid GetCloseBoidAhead(List<IBoid> worldBoids, int aheadDistance)
+        private IBoid GetCloseBoidAhead(IBoid[] worldBoids, int aheadDistance)
         {
             IBoid neighbor = null;
             var tv = Vector3.Normalize(this.Host.Velocity).ScaleBy(aheadDistance);
             var ahead = Vector3.Add(this.Host.Position, tv);
 
-            foreach (var boid in worldBoids)
+            for (int i = 0; i < worldBoids.Length; i++)
             {
-                if (boid != this.Host && Vector3.Distance(ahead, boid.Position) <= aheadDistance)
+                if (worldBoids[i] != this.Host && Vector3.Distance(ahead, worldBoids[i].Position) <= aheadDistance)
                 {
-                    neighbor = boid;
+                    neighbor = worldBoids[i];
                 }
             }
-
+            
             return neighbor;
         }
     }

@@ -47,22 +47,22 @@ namespace Lillheaton.Monogame.Steering.Behaviours
         {
             IObstacle mostThreating = null;
 
-            foreach (var obstacle in obstacles)
+            for (int i = 0; i < obstacles.Length; i++)
             {
                 bool collision = false;
-                if (obstacle is ICircleObstacle)
+                if (obstacles[i] is ICircleObstacle)
                 {
-                    collision = this.LineIntersectsCircle(ahead, obstacle as ICircleObstacle);
+                    collision = this.LineIntersectsCircle(ahead, obstacles[i] as ICircleObstacle);
                 }
 
-                if (obstacle is IRectangleObstacle)
+                if (obstacles[i] is IRectangleObstacle)
                 {
-                    collision = this.LineIntersectsRectangle(ahead, obstacle as IRectangleObstacle);
+                    collision = this.LineIntersectsRectangle(ahead, obstacles[i] as IRectangleObstacle);
                 }
 
-                if (collision && (mostThreating == null || Vector3.Distance(this.Host.Position, obstacle.Center) < Vector3.Distance(this.Host.Position, mostThreating.Center)))
+                if (collision && (mostThreating == null || Vector3.Distance(this.Host.Position, obstacles[i].Center) < Vector3.Distance(this.Host.Position, mostThreating.Center)))
                 {
-                    mostThreating = obstacle;
+                    mostThreating = obstacles[i];
                 }
             }
 

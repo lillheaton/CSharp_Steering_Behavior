@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 
 namespace Lillheaton.Monogame.Steering.Behaviours
 {
@@ -19,7 +18,7 @@ namespace Lillheaton.Monogame.Steering.Behaviours
                 this.Seek(this.DoFollowPath(path));
             }
         }
-        public void FollowPath(Path path, List<IBoid> boidToSeparateFrom)
+        public void FollowPath(Path path, IBoid[] boidToSeparateFrom)
         {
             if (path.Get().Count - 1 == _currentNodePath)
             {
