@@ -6,18 +6,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
     {
         public void Arrive(Vector3 target)
         {
-            if (Vector3.Distance(target, this.Host.Position) > 3f)
-            {
-                this.Steering = Vector3.Add(this.Steering, this.DoArrive(target));
-            }
+            this.Steering = Vector3.Add(this.Steering, this.DoArrive(target));
         }
         public void Arrive(Vector3 target, IBoid[] boidToSeparateFrom)
         {
-            if (Vector3.Distance(target, this.Host.Position) > 3f)
-            {
-                this.Steering = this.Steering + (this.DoArrive(target));
-                this.Steering = this.Steering + this.Separation(boidToSeparateFrom);
-            }
+            this.Steering = this.Steering + (this.DoArrive(target));
+            this.Steering = this.Steering + this.Separation(boidToSeparateFrom);
         }
 
         public Vector3 DoArrive(Vector3 target)

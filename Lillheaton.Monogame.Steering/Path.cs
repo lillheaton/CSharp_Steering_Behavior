@@ -25,6 +25,11 @@ namespace Lillheaton.Monogame.Steering
         public List<Vector3> Get()
         {
             return this._path;
-        } 
+        }
+
+        public void Clear()
+        {
+            this._path.Clear();
+        }
     }
 }

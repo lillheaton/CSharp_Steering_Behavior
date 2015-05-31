@@ -49,6 +49,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             this.Host.Position = Vector3.Add(this.Host.Position, this.Host.Velocity);
         }
 
+        public void Stop()
+        {
+            this.ResetPath();
+
+        }
+
         private Vector3 Separation(IBoid[] worldBoids)
         {
             var force = new Vector3();
