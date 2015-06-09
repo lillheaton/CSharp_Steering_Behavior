@@ -30,14 +30,12 @@ namespace Lillheaton.Monogame.Steering.Behaviours
             this.Angle = 0;
             this.random = new Random(DateTime.Now.Millisecond);
             this.Host.Velocity = this.Host.Velocity.Truncate(this.Host.GetMaxVelocity());
-            if (this.Settings == null)
-            {
-                this.Settings = new Settings();
-            }
+            this.Settings = Settings ?? new Settings();            
         }
 
         public void Update(GameTime gameTime)
         {
+            //Console.WriteLine(this.Steering);
             this.Steering = this.Steering.Truncate(Settings.MaxForce);
             this.Steering = this.Steering.ScaleBy((float)1 / this.Host.GetMass());
 
@@ -51,8 +49,9 @@ namespace Lillheaton.Monogame.Steering.Behaviours
 
         public void Stop()
         {
+            this.Steering = new Vector3(0, 0, 0);
+            this.Host.Velocity = new Vector3(0, 0, 0);
             this.ResetPath();
-
         }
 
         private Vector3 Separation(IBoid[] worldBoids)
